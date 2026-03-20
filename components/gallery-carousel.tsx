@@ -5,12 +5,26 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 const GALLERY = [
-  { src: "/gallery/gallery-1.png", alt: "Youth dribbling – skill development", caption: "Skill Development" },
-  { src: "/gallery/gallery-2.png", alt: "ANSA athletes with medals", caption: "Champions" },
-  { src: "/gallery/gallery-3.png", alt: "ANSA Basketball athlete", caption: "Our Athletes" },
-  { src: "/gallery/gallery-4.png", alt: "ANSA team with basketballs", caption: "Team Spirit" },
-  { src: "/gallery/gallery-5.png", alt: "Coach huddle with youth", caption: "Coaching Moments" },
-  { src: "/gallery/gallery-7.png", alt: "ANSA Basketball Academy team", caption: "Our Family" },
+  {
+    src: "/gallery/gallery-1.png",
+    alt: "ANSA Basketball players in action on an outdoor court",
+    caption: "On the court",
+  },
+  {
+    src: "/gallery/gallery-2.png",
+    alt: "ANSA Basketball coach with young players wearing medals",
+    caption: "Our community",
+  },
+  {
+    src: "/gallery/gallery-3.png",
+    alt: "Athlete receiving a medal at an outdoor ceremony",
+    caption: "Recognition & pride",
+  },
+  {
+    src: "/gallery/gallery-4.png",
+    alt: "Large ANSA squad with medals and trophies after competition",
+    caption: "One team",
+  },
 ];
 
 export function GalleryCarousel() {

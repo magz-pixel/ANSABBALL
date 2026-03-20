@@ -73,8 +73,8 @@ export default function AboutPage() {
           <div className="flex flex-col items-center gap-12 lg:flex-row lg:items-start lg:gap-16">
             <div className="relative aspect-square w-56 shrink-0 overflow-hidden rounded-full shadow-xl ring-2 ring-gray-100 sm:w-64">
               <Image
-                src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
-                alt="Brian Otieno, ANSA founder"
+                src="/gallery/gallery-2.png"
+                alt="Brian Otieno with ANSA athletes"
                 fill
                 className="object-cover object-top"
                 sizes="(max-width: 640px) 224px, 256px"

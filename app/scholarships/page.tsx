@@ -25,8 +25,8 @@ const SUCCESS_STORIES = [
   {
     name: "Our Family",
     story: "Every scholarship recipient becomes part of the ANSA family. We invest in youth who show dedication and heart.",
-    image: "/gallery/gallery-7.png",
-    alt: "ANSA Basketball Academy team",
+    image: "/gallery/gallery-5.png",
+    alt: "ANSA team celebrating with medals on court",
   },
 ];
 
@@ -40,6 +40,7 @@ export default function ScholarshipsPage() {
           alt="ANSA scholarship recipients"
           fill
           className="object-cover opacity-30"
+          sizes="100vw"
         />
         <div className="absolute inset-0 bg-[#001F3F]/80" />
         <h1 className="relative z-10 text-4xl font-bold text-white md:text-5xl">

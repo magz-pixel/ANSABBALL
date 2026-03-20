@@ -61,8 +61,11 @@ export function MerchandiseCartProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setLines(loadInitial());
-    setHydrated(true);
+    const id = requestAnimationFrame(() => {
+      setLines(loadInitial());
+      setHydrated(true);
+    });
+    return () => cancelAnimationFrame(id);
   }, []);
 
   useEffect(() => {

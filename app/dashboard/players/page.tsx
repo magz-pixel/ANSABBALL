@@ -2,7 +2,6 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddPlayerButton } from "@/components/dashboard/add-player-button";
 import { getPlayerPhotoUrl } from "@/lib/player-avatar";
 

@@ -25,8 +25,8 @@ export function AttendanceClient({ groups }: { groups: Group[] }) {
 
   useEffect(() => {
     if (!selectedGroupId) {
-      setPlayers([]);
-      return;
+      const id = requestAnimationFrame(() => setPlayers([]));
+      return () => cancelAnimationFrame(id);
     }
     async function load() {
       const { data } = await supabase

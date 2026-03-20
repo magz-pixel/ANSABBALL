@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo } from "react";
 import {
   Radar,
   RadarChart,
@@ -8,26 +8,27 @@ import {
   PolarAngleAxis,
   PolarRadiusAxis,
   ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
 } from "recharts";
-import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { PLAYER_SKILLS } from "@/lib/player-skills";
 import { DownloadPlayerReportButton } from "@/components/dashboard/download-player-report-button";
+import { PlayerEvaluationForm } from "@/components/dashboard/player-evaluation-form";
+import { EvaluationCategoryLineChart } from "@/components/dashboard/evaluation-category-line-chart";
+import {
+  RADAR_CATEGORY_ORDER,
+  categoryAveragesFromScores,
+  getCategoryLabel,
+  RATING_SCALE_LABELS,
+} from "@/lib/evaluation-rubric";
 
-const SKILLS = [...PLAYER_SKILLS];
+export interface EvaluationSnapshot {
+  id: string;
+  evaluated_at: string;
+  experience_summary: string | null;
+  comments_recommendations: string | null;
+  scores: Record<string, number>;
+}
 
-interface Log {
+interface LegacyLog {
   id: string;
   date: string;
   skill: string;
@@ -38,195 +39,188 @@ interface Log {
 export function PlayerProfileClient({
   playerId,
   playerName,
-  initialLogs,
+  initialEvaluations,
+  initialLegacyLogs,
   canEdit = false,
+  showPdfCard = true,
 }: {
   playerId: string;
   playerName: string;
-  initialLogs: Log[];
+  initialEvaluations: EvaluationSnapshot[];
+  initialLegacyLogs: LegacyLog[];
   canEdit?: boolean;
+  /** Hide when parent page already has a download button */
+  showPdfCard?: boolean;
 }) {
-  const router = useRouter();
-  const supabase = createClient();
-  const [logs, setLogs] = useState(initialLogs);
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState(
-    Object.fromEntries(SKILLS.map((s) => [s, 5])) as Record<string, number>
-  );
-  const [notes, setNotes] = useState("");
-  const [loading, setLoading] = useState(false);
+  const latestEvaluation = useMemo(() => {
+    if (!initialEvaluations.length) return null;
+    return [...initialEvaluations].sort((a, b) =>
+      b.evaluated_at.localeCompare(a.evaluated_at)
+    )[0];
+  }, [initialEvaluations]);
 
-  const latestBySkill = SKILLS.map((skill) => {
-    const log = [...logs].reverse().find((l) => l.skill === skill);
-    return { skill, value: log?.value ?? 0, fullMark: 10 };
-  });
-
-  const chartData = SKILLS.map((skill) => {
-    const log = logs.find((l) => l.skill === skill);
-    return { skill, value: log?.value ?? 0 };
-  });
-
-  const timeSeriesData = SKILLS.flatMap((skill) =>
-    logs
-      .filter((l) => l.skill === skill)
-      .map((l) => ({ date: l.date, [skill]: l.value, skill }))
-  ).sort((a, b) => a.date.localeCompare(b.date));
-
-  const uniqueDates = [...new Set(timeSeriesData.map((d) => d.date))].slice(-10);
-  const lineData = uniqueDates.map((date) => {
-    const point: Record<string, string | number> = { date };
-    SKILLS.forEach((s) => {
-      const log = logs.find((l) => l.date === date && l.skill === s);
-      point[s] = log?.value ?? 0;
-    });
-    return point;
-  });
-
-  async function handleAddLog(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    for (const skill of SKILLS) {
-      const value = form[skill];
-      if (value != null && value >= 0 && value <= 10) {
-        await supabase.from("progress_logs").insert({
-          player_id: playerId,
-          skill,
-          value,
-          coach_notes: notes.trim() || null,
-        });
-      }
+  const radarData = useMemo(() => {
+    if (!latestEvaluation) {
+      return RADAR_CATEGORY_ORDER.map((id) => ({
+        skill: getCategoryLabel(id),
+        value: 0,
+        fullMark: 5,
+      }));
     }
-    setLoading(false);
-    setForm(Object.fromEntries(SKILLS.map((s) => [s, 5])) as Record<string, number>);
-    setNotes("");
-    setShowForm(false);
-    router.refresh();
-  }
+    const avgs = categoryAveragesFromScores(latestEvaluation.scores);
+    return RADAR_CATEGORY_ORDER.map((id) => ({
+      skill: getCategoryLabel(id),
+      value: avgs[id] ?? 0,
+      fullMark: 5,
+    }));
+  }, [latestEvaluation]);
+
+  const lineData = useMemo(() => {
+    return initialEvaluations.map((ev) => {
+      const avgs = categoryAveragesFromScores(ev.scores);
+      const row: Record<string, string | number> = { date: ev.evaluated_at };
+      RADAR_CATEGORY_ORDER.forEach((id) => {
+        row[id] = avgs[id] ?? 0;
+      });
+      return row;
+    });
+  }, [initialEvaluations]);
 
   return (
     <div className="space-y-6">
       {canEdit && (
-        <Card className="border-[#0066CC]/30 bg-[#0066CC]/5">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-lg">📋 Log Session / Add Progress</CardTitle>
-            <Button
-              size="sm"
-              className="bg-[#0066CC] hover:bg-blue-700"
-              onClick={() => setShowForm(!showForm)}
-            >
-              {showForm ? "Cancel" : "Add Log"}
-            </Button>
+        <Card className="border-[#001F3F]/20">
+          <CardHeader>
+            <CardTitle className="text-xl text-[#001F3F]">
+              New evaluation
+            </CardTitle>
+            <p className="text-sm text-black/70">
+              Complete the rubric below (1–5). This replaces the old 0–10 quick log — it
+              matches the ANSA paper evaluation form.
+            </p>
           </CardHeader>
-          {showForm && (
-            <CardContent>
-              <form onSubmit={handleAddLog} className="space-y-4">
-                <p className="text-sm text-black/70">Rate each skill 0–10. Add coach notes for drills worked on.</p>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {SKILLS.map((skill) => (
-                    <div key={skill}>
-                      <Label>{skill.replace("_", " ")}</Label>
-                      <Input
-                        type="number"
-                        min={0}
-                        max={10}
-                        step={0.5}
-                        value={form[skill] ?? 5}
-                        onChange={(e) =>
-                          setForm((f) => ({ ...f, [skill]: parseFloat(e.target.value) || 0 }))
-                        }
-                      />
-                    </div>
-                  ))}
-                </div>
-                <div>
-                  <Label>Coach Notes (drills, focus areas)</Label>
-                  <textarea
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0066CC] focus:outline-none focus:ring-2 focus:ring-[#0066CC]/20"
-                    rows={3}
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="e.g. Worked on crossover dribble, free throws. Good form today."
-                  />
-                </div>
-                <Button type="submit" disabled={loading} className="bg-[#0066CC] hover:bg-blue-700">
-                  {loading ? "Saving..." : "Save Progress Log"}
-                </Button>
-              </form>
-            </CardContent>
-          )}
+          <CardContent>
+            <PlayerEvaluationForm playerId={playerId} />
+          </CardContent>
         </Card>
       )}
 
       <Card>
         <CardHeader>
-          <CardTitle>Skill Radar</CardTitle>
+          <CardTitle>Category radar (latest evaluation)</CardTitle>
+          <p className="text-xs text-black/60">
+            Each spoke is the average of that category&apos;s items (1–5).{" "}
+            {RATING_SCALE_LABELS[1]} … {RATING_SCALE_LABELS[5]}
+          </p>
         </CardHeader>
         <CardContent>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={latestBySkill}>
+          {!latestEvaluation ? (
+            <p className="text-sm text-black/60">
+              No evaluation yet. {canEdit ? "Submit one above." : "Check back after coaches evaluate."}
+            </p>
+          ) : (
+            <div className="h-72 min-w-0 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart data={radarData}>
                   <PolarGrid />
-                  <PolarAngleAxis dataKey="skill" />
-                  <PolarRadiusAxis angle={30} domain={[0, 10]} />
+                  <PolarAngleAxis dataKey="skill" tick={{ fontSize: 10 }} />
+                  <PolarRadiusAxis angle={30} domain={[0, 5]} tickCount={6} />
                   <Radar
                     name={playerName}
                     dataKey="value"
                     stroke="#0066CC"
                     fill="#0066CC"
-                    fillOpacity={0.4}
+                    fillOpacity={0.35}
                   />
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Progress Over Time</CardTitle>
+          <CardTitle>Category trends (over time)</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={lineData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis domain={[0, 10]} />
-                <Tooltip />
-                <Legend />
-                {SKILLS.map((s, i) => (
-                  <Line
-                    key={s}
-                    type="monotone"
-                    dataKey={s}
-                    stroke={
-                      ["#0066CC", "#001F3F", "#22c55e", "#eab308", "#ef4444", "#8b5cf6"][i]
-                    }
-                    strokeWidth={2}
-                  />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+          {lineData.length === 0 ? (
+            <p className="text-sm text-black/60">No evaluations to chart yet.</p>
+          ) : (
+            <EvaluationCategoryLineChart data={lineData} />
+          )}
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>PDF report</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-black/70">
-            Download a printable summary with profile, latest skill ratings, progress log, and
-            recent attendance — for staff records or sharing with families.
-          </p>
-          <DownloadPlayerReportButton
-            playerId={playerId}
-            playerName={playerName}
-            className="mt-4"
-          />
-        </CardContent>
-      </Card>
+      {initialEvaluations.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent evaluation notes</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {[...initialEvaluations]
+              .sort((a, b) => b.evaluated_at.localeCompare(a.evaluated_at))
+              .slice(0, 5)
+              .map((ev) => (
+                <div
+                  key={ev.id}
+                  className="border-b border-gray-100 pb-3 last:border-0"
+                >
+                  <p className="text-xs font-medium text-[#0066CC]">
+                    {ev.evaluated_at}
+                  </p>
+                  {ev.comments_recommendations ? (
+                    <p className="mt-1 text-sm text-black/85">
+                      {ev.comments_recommendations}
+                    </p>
+                  ) : (
+                    <p className="text-sm text-black/50">No comments on file.</p>
+                  )}
+                </div>
+              ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {initialLegacyLogs.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Legacy progress logs (0–10)</CardTitle>
+            <p className="text-sm text-black/60">
+              Older quick logs before the formal rubric. Kept for history only.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <ul className="max-h-48 space-y-2 overflow-y-auto text-sm">
+              {initialLegacyLogs.slice(0, 20).map((l) => (
+                <li key={l.id} className="border-b border-gray-50 pb-1">
+                  {l.date} · {l.skill} · {l.value}/10
+                  {l.coach_notes ? ` — ${l.coach_notes}` : ""}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
+      {showPdfCard ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>PDF report</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-black/70">
+              Printable evaluation-style report with category summary, detailed
+              ratings, comments, and attendance.
+            </p>
+            <DownloadPlayerReportButton
+              playerId={playerId}
+              playerName={playerName}
+              className="mt-4"
+            />
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   );
 }

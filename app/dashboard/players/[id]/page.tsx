@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { PlayerProfileClient } from "@/components/dashboard/player-profile-client";
+import type { EvaluationSnapshot } from "@/components/dashboard/player-profile-client";
 import { getPlayerPhotoUrl } from "@/lib/player-avatar";
 import { getCurrentUserProfile } from "@/lib/dashboard";
 import { DownloadPlayerReportButton } from "@/components/dashboard/download-player-report-button";
@@ -34,12 +35,46 @@ export default async function PlayerProfilePage({
 
   if (error || !player) notFound();
 
-  const { data: progressLogs } = await supabase
-    .from("progress_logs")
-    .select("id, date, skill, value, coach_notes")
-    .eq("player_id", id)
-    .order("date", { ascending: false })
-    .limit(50);
+  const [{ data: evalRows }, { data: progressLogs }] = await Promise.all([
+    supabase
+      .from("player_evaluations")
+      .select(
+        `
+        id,
+        evaluated_at,
+        experience_summary,
+        comments_recommendations,
+        player_evaluation_scores (metric_key, value)
+      `
+      )
+      .eq("player_id", id)
+      .order("evaluated_at", { ascending: true })
+      .limit(40),
+    supabase
+      .from("progress_logs")
+      .select("id, date, skill, value, coach_notes")
+      .eq("player_id", id)
+      .order("date", { ascending: false })
+      .limit(50),
+  ]);
+
+  const initialEvaluations: EvaluationSnapshot[] = (evalRows ?? []).map(
+    (row) => {
+      const raw = row.player_evaluation_scores as
+        | { metric_key: string; value: number }[]
+        | null;
+      const scores = Object.fromEntries(
+        (raw ?? []).map((s) => [s.metric_key, Number(s.value)])
+      );
+      return {
+        id: row.id,
+        evaluated_at: row.evaluated_at,
+        experience_summary: row.experience_summary,
+        comments_recommendations: row.comments_recommendations,
+        scores,
+      };
+    }
+  );
 
   const groupName =
     (player.player_groups as { name?: string } | null)?.name ?? null;
@@ -116,7 +151,8 @@ export default async function PlayerProfilePage({
           <PlayerProfileClient
             playerId={id}
             playerName={player.name}
-            initialLogs={progressLogs ?? []}
+            initialEvaluations={initialEvaluations}
+            initialLegacyLogs={progressLogs ?? []}
             canEdit
           />
         </div>

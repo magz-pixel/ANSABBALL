@@ -4,17 +4,18 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUserProfile } from "@/lib/dashboard";
 import { canAccessPlayerReport } from "@/lib/player-report-access";
 import { buildPlayerReportDocument } from "@/lib/player-report-pdf";
-import { PLAYER_SKILLS } from "@/lib/player-skills";
-import type { PlayerReportPayload } from "@/lib/player-report-types";
+import { buildReportPayload } from "@/lib/build-player-report-payload";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 function sanitizeFilename(name: string): string {
-  return name
-    .replace(/[^a-z0-9]+/gi, "-")
-    .replace(/^-|-$/g, "")
-    .slice(0, 48) || "player";
+  return (
+    name
+      .replace(/[^a-z0-9]+/gi, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 48) || "player"
+  );
 }
 
 export async function GET(
@@ -62,46 +63,78 @@ export async function GET(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const [{ data: progressRaw }, { data: attendanceRaw }] = await Promise.all([
-    supabase
-      .from("progress_logs")
-      .select("date, skill, value, coach_notes")
-      .eq("player_id", playerId)
-      .order("date", { ascending: false })
-      .limit(120),
-    supabase
-      .from("attendance")
-      .select("session_date, present")
-      .eq("player_id", playerId)
-      .order("session_date", { ascending: false })
-      .limit(24),
-  ]);
-
-  const progressLogs = progressRaw ?? [];
   const groupName =
     (player.player_groups as { name?: string } | null)?.name ?? null;
 
-  const latestBySkill = PLAYER_SKILLS.map((skill) => {
-    const forSkill = progressLogs.filter((l) => l.skill === skill);
-    const sorted = [...forSkill].sort((a, b) => b.date.localeCompare(a.date));
-    const top = sorted[0];
-    return { skill, value: top?.value ?? 0 };
-  });
+  const { data: latestEval } = await supabase
+    .from("player_evaluations")
+    .select(
+      `
+      id,
+      evaluated_at,
+      experience_summary,
+      comments_recommendations,
+      jersey_number,
+      grade,
+      height_cm,
+      weight_kg,
+      date_of_birth,
+      overall_strengths,
+      coach_user_id
+    `
+    )
+    .eq("player_id", playerId)
+    .order("evaluated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
-  const progressForPdf = [...progressLogs]
-    .sort((a, b) => {
-      const d = b.date.localeCompare(a.date);
-      if (d !== 0) return d;
-      return a.skill.localeCompare(b.skill);
-    })
-    .slice(0, 42);
+  let scores: Record<string, number> = {};
+  let coachName: string | null = null;
 
-  const generatedAtLabel = new Date().toLocaleString("en-KE", {
-    dateStyle: "long",
-    timeStyle: "short",
-  });
+  if (latestEval) {
+    const { data: scoreRows } = await supabase
+      .from("player_evaluation_scores")
+      .select("metric_key, value")
+      .eq("evaluation_id", latestEval.id);
 
-  const payload: PlayerReportPayload = {
+    scores = Object.fromEntries(
+      (scoreRows ?? []).map((r) => [r.metric_key, Number(r.value)])
+    );
+
+    if (latestEval.coach_user_id) {
+      const { data: coachRow } = await supabase
+        .from("users")
+        .select("full_name")
+        .eq("id", latestEval.coach_user_id)
+        .maybeSingle();
+      coachName = coachRow?.full_name ?? null;
+    }
+  }
+
+  const { data: attendanceRaw } = await supabase
+    .from("attendance")
+    .select("session_date, present")
+    .eq("player_id", playerId)
+    .order("session_date", { ascending: false })
+    .limit(24);
+
+  const latestEvaluation = latestEval
+    ? {
+        evaluated_at: latestEval.evaluated_at,
+        experience_summary: latestEval.experience_summary,
+        comments_recommendations: latestEval.comments_recommendations,
+        jersey_number: latestEval.jersey_number,
+        grade: latestEval.grade,
+        height_cm: latestEval.height_cm,
+        weight_kg: latestEval.weight_kg,
+        date_of_birth: latestEval.date_of_birth,
+        overall_strengths: latestEval.overall_strengths ?? [],
+        scores,
+        coachName,
+      }
+    : null;
+
+  const payload = buildReportPayload({
     player: {
       name: player.name,
       age: player.age,
@@ -111,27 +144,20 @@ export async function GET(
       status: player.status,
       payment_status: player.payment_status,
       join_date: player.join_date,
-      groupName,
     },
-    generatedAtLabel,
-    skills: latestBySkill,
-    progressLogs: progressForPdf.map((l) => ({
-      date: l.date,
-      skill: l.skill,
-      value: l.value,
-      coach_notes: l.coach_notes,
-    })),
+    groupName,
+    latestEvaluation,
     attendance: (attendanceRaw ?? []).map((a) => ({
       session_date: a.session_date,
       present: a.present,
     })),
-  };
+  });
 
   const doc = buildPlayerReportDocument(payload);
   const buffer = await renderToBuffer(doc);
 
   const safe = sanitizeFilename(player.name);
-  const filename = `ANSA-${safe}-report.pdf`;
+  const filename = `ANSA-${safe}-evaluation-report.pdf`;
 
   return new NextResponse(new Uint8Array(buffer), {
     status: 200,

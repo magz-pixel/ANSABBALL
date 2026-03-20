@@ -6,8 +6,8 @@ export default function MerchandisePage() {
     <div className="bg-white">
       <section className="relative flex min-h-[38vh] items-center justify-center overflow-hidden bg-[#001F3F] px-4">
         <Image
-          src="https://images.unsplash.com/photo-1546510770-a68da103a2be?auto=format&fit=crop&w=1920&q=80"
-          alt="Basketball on court"
+          src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1920&q=80"
+          alt="Basketball shoes and gear — ANSA store"
           fill
           className="object-cover opacity-35"
           priority

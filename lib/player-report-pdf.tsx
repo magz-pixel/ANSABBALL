@@ -6,179 +6,249 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 import type { PlayerReportPayload } from "@/lib/player-report-types";
-import { formatSkillLabel } from "@/lib/player-skills";
+import {
+  EVALUATION_RUBRIC,
+  RATING_SCALE_LABELS,
+} from "@/lib/evaluation-rubric";
 
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
-    fontSize: 9,
+    padding: 36,
+    fontSize: 8,
     fontFamily: "Helvetica",
     color: "#1a1a1a",
   },
   brand: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "bold",
     color: "#001F3F",
     marginBottom: 2,
   },
-  tagline: { fontSize: 9, color: "#0066CC", marginBottom: 16 },
-  title: {
-    fontSize: 14,
+  docTitle: {
+    fontSize: 12,
     fontWeight: "bold",
     color: "#001F3F",
+    marginTop: 8,
     marginBottom: 4,
   },
-  meta: { fontSize: 8, color: "#555", marginBottom: 14 },
+  tagline: { fontSize: 8, color: "#0066CC", marginBottom: 10 },
   section: {
-    marginTop: 10,
-    marginBottom: 6,
-    fontSize: 11,
+    marginTop: 8,
+    marginBottom: 4,
+    fontSize: 10,
     fontWeight: "bold",
     color: "#001F3F",
     borderBottomWidth: 1,
     borderBottomColor: "#0066CC",
-    paddingBottom: 3,
+    paddingBottom: 2,
   },
   row: {
     flexDirection: "row",
     borderBottomWidth: 0.5,
     borderBottomColor: "#e5e7eb",
-    paddingVertical: 5,
+    paddingVertical: 4,
   },
-  label: { width: "32%", fontWeight: "bold", color: "#374151" },
-  value: { width: "68%", color: "#111" },
+  label: { width: "34%", fontWeight: "bold", color: "#374151" },
+  value: { width: "66%", color: "#111" },
   skillRow: {
     flexDirection: "row",
-    paddingVertical: 4,
+    paddingVertical: 3,
     borderBottomWidth: 0.5,
     borderBottomColor: "#f3f4f6",
   },
-  skillName: { flex: 2, color: "#374151" },
-  skillVal: { flex: 1, textAlign: "right", color: "#0066CC", fontWeight: "bold" },
-  logRow: {
-    flexDirection: "column",
-    marginBottom: 8,
-    paddingBottom: 6,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#eee",
+  skillName: { flex: 2, color: "#374151", fontSize: 8 },
+  skillVal: { flex: 0.6, textAlign: "right", color: "#0066CC", fontWeight: "bold" },
+  legend: {
+    marginTop: 6,
+    padding: 6,
+    backgroundColor: "#f8fafc",
+    fontSize: 7,
+    color: "#444",
   },
-  logLine: { fontSize: 8, color: "#333" },
-  logNotes: { fontSize: 8, color: "#555", marginTop: 2, fontStyle: "italic" },
   footer: {
     position: "absolute",
-    bottom: 24,
-    left: 40,
-    right: 40,
+    bottom: 22,
+    left: 36,
+    right: 36,
     fontSize: 7,
     color: "#888",
     textAlign: "center",
   },
-  badge: {
-    fontSize: 8,
-    marginTop: 2,
-    color: "#059669",
+  meta: { fontSize: 7, color: "#555", marginBottom: 8 },
+  catHeader: {
+    marginTop: 6,
+    fontSize: 9,
+    fontWeight: "bold",
+    color: "#001F3F",
   },
 });
 
 function PlayerReportDoc({ data }: { data: PlayerReportPayload }) {
-  const { player } = data;
+  const { player, evaluation } = data;
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <Text style={styles.brand}>ANSA Basketball Academy</Text>
-        <Text style={styles.tagline}>Player progress report · Nairobi, Kenya</Text>
-
-        <Text style={styles.title}>{player.name}</Text>
+        <Text style={styles.tagline}>Nairobi, Kenya · Confidential</Text>
+        <Text style={styles.docTitle}>Player performance evaluation</Text>
         <Text style={styles.meta}>
-          Generated {data.generatedAtLabel} · Confidential
+          Generated {data.generatedAtLabel}
         </Text>
 
-        <Text style={styles.section}>Profile</Text>
+        <Text style={styles.section}>Player</Text>
         <View style={styles.row}>
-          <Text style={styles.label}>Age</Text>
-          <Text style={styles.value}>{player.age ?? "—"}</Text>
+          <Text style={styles.label}>Name</Text>
+          <Text style={styles.value}>{player.name}</Text>
         </View>
         <View style={styles.row}>
-          <Text style={styles.label}>School</Text>
-          <Text style={styles.value}>{player.school ?? "—"}</Text>
+          <Text style={styles.label}>Age / School</Text>
+          <Text style={styles.value}>
+            {player.age ?? "—"} · {player.school ?? "—"}
+          </Text>
         </View>
         <View style={styles.row}>
-          <Text style={styles.label}>Gender</Text>
-          <Text style={styles.value}>{player.gender ?? "—"}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Position</Text>
-          <Text style={styles.value}>{player.position ?? "—"}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Group</Text>
-          <Text style={styles.value}>{player.groupName ?? "—"}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Status</Text>
-          <Text style={styles.value}>{player.status ?? "—"}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Payment</Text>
-          <Text style={styles.value}>{player.payment_status ?? "—"}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Joined</Text>
-          <Text style={styles.value}>{player.join_date ?? "—"}</Text>
+          <Text style={styles.label}>Group / Position</Text>
+          <Text style={styles.value}>
+            {player.groupName ?? "—"} · {player.position ?? "—"}
+          </Text>
         </View>
 
-        <Text style={styles.section}>Latest skill ratings (0–10)</Text>
-        {data.skills.map((s) => (
-          <View key={s.skill} style={styles.skillRow}>
-            <Text style={styles.skillName}>{formatSkillLabel(s.skill)}</Text>
-            <Text style={styles.skillVal}>{s.value}</Text>
-          </View>
-        ))}
+        {evaluation ? (
+          <>
+            <View style={styles.row}>
+              <Text style={styles.label}>Evaluation date</Text>
+              <Text style={styles.value}>{evaluation.evaluatedAt}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.label}>Evaluator</Text>
+              <Text style={styles.value}>{evaluation.coachName ?? "—"}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.label}>Grade / #</Text>
+              <Text style={styles.value}>
+                {evaluation.grade ?? "—"} · #{evaluation.jerseyNumber ?? "—"}
+              </Text>
+            </View>
+            {(evaluation.dateOfBirth ||
+              evaluation.heightCm != null ||
+              evaluation.weightKg != null) && (
+              <View style={styles.row}>
+                <Text style={styles.label}>DOB / H / W</Text>
+                <Text style={styles.value}>
+                  {evaluation.dateOfBirth ?? "—"} ·{" "}
+                  {evaluation.heightCm != null ? `${evaluation.heightCm} cm` : "—"} ·{" "}
+                  {evaluation.weightKg != null ? `${evaluation.weightKg} kg` : "—"}
+                </Text>
+              </View>
+            )}
+
+            {evaluation.experienceSummary ? (
+              <>
+                <Text style={styles.section}>Experience with player</Text>
+                <Text style={{ fontSize: 8, color: "#333", marginBottom: 6 }}>
+                  {evaluation.experienceSummary}
+                </Text>
+              </>
+            ) : null}
+
+            <Text style={styles.section}>Rating scale (1–5)</Text>
+            <View style={styles.legend}>
+              {[1, 2, 3, 4, 5].map((n) => (
+                <Text key={n} style={{ marginBottom: 2 }}>
+                  {n} = {RATING_SCALE_LABELS[n]}
+                </Text>
+              ))}
+            </View>
+
+            <Text style={styles.section}>Category averages</Text>
+            {evaluation.categoryAverages.map((c) => (
+              <View key={c.id} style={styles.skillRow}>
+                <Text style={styles.skillName}>{c.label}</Text>
+                <Text style={styles.skillVal}>{c.value.toFixed(1)}</Text>
+              </View>
+            ))}
+
+            {evaluation.overallStrengths.length > 0 ? (
+              <>
+                <Text style={styles.section}>Overall strengths</Text>
+                <Text style={{ fontSize: 8 }}>
+                  {evaluation.overallStrengths.join(", ")}
+                </Text>
+              </>
+            ) : null}
+          </>
+        ) : (
+          <Text style={{ marginTop: 10, color: "#666", fontSize: 9 }}>
+            {data.legacyNote ??
+              "No formal evaluation on file yet. Ask your coach to submit an evaluation in the dashboard."}
+          </Text>
+        )}
 
         <Text style={styles.footer}>
-          ANSA Basketball Academy · This report is for coaches, staff, and linked
-          parents only.
+          ANSA Basketball Academy · Staff & linked parents only
         </Text>
       </Page>
 
-      <Page size="A4" style={styles.page}>
-        <Text style={styles.brand}>Progress log</Text>
-        <Text style={styles.meta}>
-          Recent entries (newest first) · {data.progressLogs.length} rows
-        </Text>
+      {evaluation && evaluation.detailedLines.length > 0 ? (
+        <Page size="A4" style={styles.page}>
+          <Text style={styles.brand}>Detailed ratings (1–5)</Text>
+          <Text style={styles.meta}>{player.name} · {evaluation.evaluatedAt}</Text>
 
-        {data.progressLogs.length === 0 ? (
-          <Text style={{ marginTop: 12, color: "#666" }}>
-            No progress logs recorded yet.
-          </Text>
-        ) : (
-          data.progressLogs.map((log, i) => (
-            <View key={`${log.date}-${log.skill}-${i}`} style={styles.logRow}>
-              <Text style={styles.logLine}>
-                {log.date} · {formatSkillLabel(log.skill)} · {log.value}/10
+          {EVALUATION_RUBRIC.map((cat) => {
+            const lines = evaluation.detailedLines.filter(
+              (l) => l.categoryLabel === cat.label
+            );
+            if (lines.length === 0) return null;
+            return (
+              <View key={cat.id} wrap={false}>
+                <Text style={styles.catHeader}>{cat.label}</Text>
+                {lines.map((l, i) => (
+                  <View key={`${l.metricLabel}-${i}`} style={styles.skillRow}>
+                    <Text style={styles.skillName}>{l.metricLabel}</Text>
+                    <Text style={styles.skillVal}>{l.value}</Text>
+                  </View>
+                ))}
+              </View>
+            );
+          })}
+
+          {evaluation.commentsRecommendations ? (
+            <>
+              <Text style={[styles.section, { marginTop: 12 }]}>
+                Comments / recommendations
               </Text>
-              {log.coach_notes ? (
-                <Text style={styles.logNotes}>{log.coach_notes}</Text>
-              ) : null}
-            </View>
-          ))
-        )}
+              <Text style={{ fontSize: 8, color: "#333" }}>
+                {evaluation.commentsRecommendations}
+              </Text>
+            </>
+          ) : null}
 
-        <Text style={[styles.section, { marginTop: 16 }]}>Recent attendance</Text>
+          <Text style={styles.footer}>{data.generatedAtLabel}</Text>
+        </Page>
+      ) : null}
+
+      <Page size="A4" style={styles.page}>
+        <Text style={styles.brand}>Attendance</Text>
+        <Text style={styles.meta}>Recent sessions</Text>
         {data.attendance.length === 0 ? (
-          <Text style={{ color: "#666" }}>No attendance records in range.</Text>
+          <Text style={{ color: "#666" }}>No attendance rows in range.</Text>
         ) : (
           data.attendance.map((a) => (
             <View key={a.session_date} style={styles.row}>
               <Text style={styles.label}>{a.session_date}</Text>
-              <Text style={[styles.value, a.present ? styles.badge : { color: "#b91c1c" }]}>
+              <Text
+                style={[
+                  styles.value,
+                  { color: a.present ? "#059669" : "#b91c1c" },
+                ]}
+              >
                 {a.present ? "Present" : "Absent"}
               </Text>
             </View>
           ))
         )}
-
-        <Text style={styles.footer}>
+        <Text style={[styles.footer, { marginTop: 20 }]}>
           Questions? Contact ANSA staff · {data.generatedAtLabel}
         </Text>
       </Page>

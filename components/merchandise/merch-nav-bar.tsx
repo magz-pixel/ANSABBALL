@@ -29,7 +29,7 @@ export function MerchNavBar() {
                 key={l.href}
                 href={l.href}
                 className={cn(
-                  "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  "min-h-[44px] rounded-lg px-4 py-2.5 text-sm font-medium transition-colors touch-manipulation sm:min-h-0",
                   active
                     ? "bg-[#001F3F] text-white"
                     : "text-[#001F3F] hover:bg-white"

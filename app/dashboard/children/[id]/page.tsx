@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ProgressLineChart } from "@/components/dashboard/progress-line-chart";
+import { PlayerProfileClient } from "@/components/dashboard/player-profile-client";
+import type { EvaluationSnapshot } from "@/components/dashboard/player-profile-client";
 import { getPlayerPhotoUrl } from "@/lib/player-avatar";
 import { DownloadPlayerReportButton } from "@/components/dashboard/download-player-report-button";
 
@@ -28,11 +29,46 @@ export default async function ChildProfilePage({
 
   if (!player) notFound();
 
-  const { data: progress } = await supabase
-    .from("progress_logs")
-    .select("date, skill, value, coach_notes")
-    .eq("player_id", id)
-    .order("date");
+  const [{ data: evalRows }, { data: progress }] = await Promise.all([
+    supabase
+      .from("player_evaluations")
+      .select(
+        `
+        id,
+        evaluated_at,
+        experience_summary,
+        comments_recommendations,
+        player_evaluation_scores (metric_key, value)
+      `
+      )
+      .eq("player_id", id)
+      .order("evaluated_at", { ascending: true })
+      .limit(40),
+    supabase
+      .from("progress_logs")
+      .select("id, date, skill, value, coach_notes")
+      .eq("player_id", id)
+      .order("date", { ascending: false })
+      .limit(50),
+  ]);
+
+  const initialEvaluations: EvaluationSnapshot[] = (evalRows ?? []).map(
+    (row) => {
+      const raw = row.player_evaluation_scores as
+        | { metric_key: string; value: number }[]
+        | null;
+      const scores = Object.fromEntries(
+        (raw ?? []).map((s) => [s.metric_key, Number(s.value)])
+      );
+      return {
+        id: row.id,
+        evaluated_at: row.evaluated_at,
+        experience_summary: row.experience_summary,
+        comments_recommendations: row.comments_recommendations,
+        scores,
+      };
+    }
+  );
 
   const { data: attendance } = await supabase
     .from("attendance")
@@ -41,17 +77,13 @@ export default async function ChildProfilePage({
     .order("session_date", { ascending: false })
     .limit(14);
 
-  const chartData = (progress ?? []).reduce((acc, p) => {
-    const existing = acc.find((x) => x.date === p.date);
-    if (existing) existing[p.skill] = p.value;
-    else acc.push({ date: p.date, [p.skill]: p.value } as Record<string, string | number>);
-    return acc;
-  }, [] as Record<string, string | number>[]);
-
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <Link href="/dashboard/children" className="inline-flex items-center gap-2 text-sm font-medium text-[#0066CC] hover:underline">
+        <Link
+          href="/dashboard/children"
+          className="inline-flex items-center gap-2 text-sm font-medium text-[#0066CC] hover:underline"
+        >
           ← Back to My Children
         </Link>
         <DownloadPlayerReportButton
@@ -74,27 +106,24 @@ export default async function ChildProfilePage({
         <div>
           <h1 className="text-3xl font-bold text-[#001F3F]">{player.name}</h1>
           <p className="mt-1 text-black/70">
-            Age {player.age ?? "—"} • {(player.player_groups as { name?: string } | null)?.name ?? "—"}
+            Age {player.age ?? "—"} •{" "}
+            {(player.player_groups as { name?: string } | null)?.name ?? "—"}
           </p>
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Progress Over Time</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {chartData.length > 0 ? (
-            <ProgressLineChart data={chartData} />
-          ) : (
-            <p className="text-black/60">No progress data yet.</p>
-          )}
-        </CardContent>
-      </Card>
+      <PlayerProfileClient
+        playerId={id}
+        playerName={player.name}
+        initialEvaluations={initialEvaluations}
+        initialLegacyLogs={progress ?? []}
+        canEdit={false}
+        showPdfCard={false}
+      />
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent Attendance</CardTitle>
+          <CardTitle>Recent attendance</CardTitle>
         </CardHeader>
         <CardContent>
           {attendance && attendance.length > 0 ? (
@@ -110,29 +139,6 @@ export default async function ChildProfilePage({
             </ul>
           ) : (
             <p className="text-black/60">No attendance records yet.</p>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Coach Notes</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {progress?.filter((p) => p.coach_notes).length ? (
-            <ul className="space-y-3">
-              {progress
-                .filter((p) => p.coach_notes)
-                .slice(0, 10)
-                .map((p, i) => (
-                  <li key={i} className="border-b border-gray-100 pb-2 last:border-0">
-                    <p className="text-sm text-black/70">{p.date}</p>
-                    <p className="text-black/85">{p.coach_notes}</p>
-                  </li>
-                ))}
-            </ul>
-          ) : (
-            <p className="text-black/60">No coach notes yet.</p>
           )}
         </CardContent>
       </Card>

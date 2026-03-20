@@ -53,6 +53,7 @@ export default function ProgramsPage() {
           alt="ANSA Basketball Academy"
           fill
           className="object-cover opacity-30"
+          sizes="100vw"
         />
         <div className="absolute inset-0 bg-[#001F3F]/80" />
         <h1 className="relative z-10 text-4xl font-bold text-white md:text-5xl">

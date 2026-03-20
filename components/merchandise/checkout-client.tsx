@@ -29,14 +29,17 @@ export function CheckoutClient() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const existing = sessionStorage.getItem(ORDER_SESSION_KEY);
-    if (existing) {
-      setOrderNumber(existing);
-      return;
-    }
-    const next = generateOrderNumber();
-    sessionStorage.setItem(ORDER_SESSION_KEY, next);
-    setOrderNumber(next);
+    const id = requestAnimationFrame(() => {
+      const existing = sessionStorage.getItem(ORDER_SESSION_KEY);
+      if (existing) {
+        setOrderNumber(existing);
+        return;
+      }
+      const next = generateOrderNumber();
+      sessionStorage.setItem(ORDER_SESSION_KEY, next);
+      setOrderNumber(next);
+    });
+    return () => cancelAnimationFrame(id);
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {

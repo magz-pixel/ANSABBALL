@@ -1,6 +1,8 @@
 /**
  * ANSA merchandise catalog — update prices and copy with your client.
- * Images: Unsplash (basketball / sport photography).
+ *
+ * Store images: stock product photography (Unsplash) so each item matches what
+ * you’re selling. Academy photos stay on the homepage, gallery, and programs — not here.
  */
 
 export type MerchCategory = "shoes" | "kits" | "gear";
@@ -11,11 +13,18 @@ export interface Product {
   shortDescription: string;
   priceKes: number;
   category: MerchCategory;
-  /** Full Unsplash image URL */
+  /** Product photo URL (remote or /public path) */
   imageUrl: string;
   imageAlt: string;
   /** Available for shoes & kits; omit for one-size gear */
   sizes?: string[];
+}
+
+const US = "https://images.unsplash.com";
+
+/** Consistent crop for Next/Image + Unsplash CDN */
+function u(photoId: string, w = 900): string {
+  return `${US}/${photoId}?auto=format&fit=crop&w=${w}&q=80`;
 }
 
 export const MERCH_CATEGORIES: { id: MerchCategory; label: string }[] = [
@@ -25,16 +34,15 @@ export const MERCH_CATEGORIES: { id: MerchCategory; label: string }[] = [
 ];
 
 export const PRODUCTS: Product[] = [
-  // Shoes — real sneaker / court photos
+  // Shoes — basketball sneakers (distinct product shots)
   {
     id: "shoe-pro-court",
     name: "Pro Court High-Tops",
     shortDescription: "Ankle support and grip for indoor hardwood — academy pick.",
     priceKes: 8999,
     category: "shoes",
-    imageUrl:
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80",
-    imageAlt: "Red basketball sneaker on orange background",
+    imageUrl: u("photo-1542291026-7eec264c27ff"),
+    imageAlt: "Red high-top basketball sneaker on orange background",
     sizes: ["US 6", "US 7", "US 8", "US 9", "US 10", "US 11", "US 12"],
   },
   {
@@ -43,9 +51,8 @@ export const PRODUCTS: Product[] = [
     shortDescription: "Lightweight trainer for drills and daily practice.",
     priceKes: 6499,
     category: "shoes",
-    imageUrl:
-      "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&w=900&q=80",
-    imageAlt: "White and green basketball shoes on court",
+    imageUrl: u("photo-1606107557195-0e29a4b5b4aa"),
+    imageAlt: "White and green basketball shoes on a court",
     sizes: ["US 6", "US 7", "US 8", "US 9", "US 10", "US 11"],
   },
   {
@@ -54,9 +61,8 @@ export const PRODUCTS: Product[] = [
     shortDescription: "Speed and court feel for guards and wings.",
     priceKes: 7499,
     category: "shoes",
-    imageUrl:
-      "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=900&q=80",
-    imageAlt: "Nike basketball sneakers on display",
+    imageUrl: u("photo-1595950653106-6c9ebd614d3a"),
+    imageAlt: "Black Nike basketball sneakers",
     sizes: ["US 7", "US 8", "US 9", "US 10", "US 11", "US 12"],
   },
   {
@@ -65,21 +71,19 @@ export const PRODUCTS: Product[] = [
     shortDescription: "Durable starter shoe for U12–U16 training.",
     priceKes: 4499,
     category: "shoes",
-    imageUrl:
-      "https://images.unsplash.com/photo-1515524738708-3279986ef898?auto=format&fit=crop&w=900&q=80",
-    imageAlt: "Colorful athletic sneakers",
+    imageUrl: u("photo-1515524738708-3279986ef898"),
+    imageAlt: "Colorful youth athletic basketball-style sneakers",
     sizes: ["US 4", "US 5", "US 6", "US 7"],
   },
-  // Kits
+  // Kits — jerseys, shorts, tracksuit (apparel product shots)
   {
     id: "kit-home-jersey",
     name: "Academy Home Jersey",
     shortDescription: "Breathable mesh jersey — ANSA colours (mockup style).",
     priceKes: 2499,
     category: "kits",
-    imageUrl:
-      "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=900&q=80",
-    imageAlt: "Basketball player in jersey holding ball",
+    imageUrl: u("photo-1574629810360-7efbbe195018"),
+    imageAlt: "Basketball player wearing a sleeveless jersey holding a ball",
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
   },
   {
@@ -88,9 +92,8 @@ export const PRODUCTS: Product[] = [
     shortDescription: "Two colours in one — perfect for scrimmages.",
     priceKes: 3299,
     category: "kits",
-    imageUrl:
-      "https://images.unsplash.com/photo-1519861537743-4c66769d433f?auto=format&fit=crop&w=900&q=80",
-    imageAlt: "Basketball game action on court",
+    imageUrl: u("photo-1519861537743-4c66769d433f"),
+    imageAlt: "Basketball players in jerseys during a game on court",
     sizes: ["S", "M", "L", "XL", "XXL"],
   },
   {
@@ -99,9 +102,8 @@ export const PRODUCTS: Product[] = [
     shortDescription: "Lightweight shorts with pockets for small items.",
     priceKes: 1799,
     category: "kits",
-    imageUrl:
-      "https://images.unsplash.com/photo-1519869311094-5bf5fbce704f?auto=format&fit=crop&w=900&q=80",
-    imageAlt: "Basketball shorts and sneakers flat lay style",
+    imageUrl: u("photo-1519869311094-5bf5fbce704f"),
+    imageAlt: "Basketball shorts and athletic shoes flat lay",
     sizes: ["S", "M", "L", "XL", "XXL"],
   },
   {
@@ -110,21 +112,19 @@ export const PRODUCTS: Product[] = [
     shortDescription: "Jacket and pants for travel and pre-game warm-ups.",
     priceKes: 5499,
     category: "kits",
-    imageUrl:
-      "https://images.unsplash.com/photo-1556906682-4d8f2b47a6f3?auto=format&fit=crop&w=900&q=80",
-    imageAlt: "Athletic tracksuit lifestyle",
+    imageUrl: u("photo-1556906682-4d8f2b47a6f3"),
+    imageAlt: "Athletic tracksuit jacket and pants",
     sizes: ["S", "M", "L", "XL"],
   },
-  // Gear
+  // Gear — ball, bag, sleeves, cones
   {
     id: "gear-official-ball",
     name: "Official Indoor Ball",
     shortDescription: "Size 7 composite leather — game ready.",
     priceKes: 4999,
     category: "gear",
-    imageUrl:
-      "https://images.unsplash.com/photo-1546510770-a68da103a2be?auto=format&fit=crop&w=900&q=80",
-    imageAlt: "Basketball on outdoor court",
+    imageUrl: u("photo-1546510770-a68da103a2be"),
+    imageAlt: "Orange basketball on a hardwood court",
     sizes: ["Size 6 (Youth)", "Size 7 (Official)"],
   },
   {
@@ -133,8 +133,7 @@ export const PRODUCTS: Product[] = [
     shortDescription: "Fits shoes, ball, and kit — ventilated shoe pocket.",
     priceKes: 2899,
     category: "gear",
-    imageUrl:
-      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=80",
+    imageUrl: u("photo-1553062407-98eeb64c6a62"),
     imageAlt: "Black gym duffel bag",
   },
   {
@@ -143,9 +142,8 @@ export const PRODUCTS: Product[] = [
     shortDescription: "Arm or leg sleeves for support and style.",
     priceKes: 1299,
     category: "gear",
-    imageUrl:
-      "https://images.unsplash.com/photo-1627627256672-027a4613d028?auto=format&fit=crop&w=900&q=80",
-    imageAlt: "Athletic training and basketball gear",
+    imageUrl: u("photo-1571019613454-1cb2f99b2d8b"),
+    imageAlt: "Athlete wearing compression sleeves on arms",
   },
   {
     id: "gear-cones",
@@ -153,9 +151,8 @@ export const PRODUCTS: Product[] = [
     shortDescription: "Agility cones for footwork and conditioning drills.",
     priceKes: 1999,
     category: "gear",
-    imageUrl:
-      "https://images.unsplash.com/photo-1519865966640-977f6d7cb93b?auto=format&fit=crop&w=900&q=80",
-    imageAlt: "Basketball training on court",
+    imageUrl: u("photo-1599058941417-b601ba29f42a"),
+    imageAlt: "Orange plastic training cones on grass for drills",
   },
 ];
 

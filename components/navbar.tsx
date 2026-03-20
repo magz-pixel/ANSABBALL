@@ -87,7 +87,7 @@ export function Navbar() {
           {/* Mobile menu button */}
           <button
             type="button"
-            className="inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-white/10 md:hidden"
+            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-white hover:bg-white/10 touch-manipulation md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-expanded={mobileMenuOpen}
           >
@@ -119,13 +119,13 @@ export function Navbar() {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="border-t border-white/10 py-4 md:hidden">
-            <div className="flex flex-col gap-4">
+          <div className="border-t border-white/10 py-2 md:hidden">
+            <div className="flex flex-col gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-sm font-medium text-white/90 hover:text-white"
+                  className="min-h-[48px] px-2 py-3 text-base font-medium text-white/90 hover:text-white touch-manipulation"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.label}

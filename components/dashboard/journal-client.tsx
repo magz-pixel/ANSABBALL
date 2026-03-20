@@ -23,7 +23,7 @@ export function JournalClient({
 }) {
   const router = useRouter();
   const supabase = createClient();
-  const [entries, setEntries] = useState(initialEntries);
+  const entries = initialEntries;
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [entry, setEntry] = useState("");
   const [loading, setLoading] = useState(false);

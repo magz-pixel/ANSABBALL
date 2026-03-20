@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
+import { MobileDashboardDrawer } from "@/components/dashboard/mobile-dashboard-drawer";
 import { PendingApprovalWrapper } from "@/components/dashboard/pending-approval-wrapper";
 
 export const dynamic = "force-dynamic";
@@ -92,25 +93,30 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen flex-col bg-gray-50 lg:flex-row">
       {canAccessFullDashboard ? (
-        <DashboardSidebar role={role} />
+        <>
+          <DashboardSidebar role={role} />
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            <MobileDashboardDrawer role={role} />
+            <div className="flex-1 overflow-x-hidden overflow-y-auto bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+              <div className="mx-auto max-w-[100vw] p-4 sm:p-6 lg:p-8">{children}</div>
+            </div>
+          </div>
+        </>
       ) : (
-        <div className="hidden lg:block w-64 shrink-0 border-r border-gray-200 bg-[#001F3F]" />
+        <div className="flex-1 overflow-x-hidden overflow-y-auto bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+          <div className="p-4 sm:p-6 lg:p-8">
+            <PendingApprovalWrapper
+              userId={user.id}
+              email={user.email ?? ""}
+              fullName={profile?.full_name ?? ""}
+              role={role}
+              hasPlayerProfile={hasPlayerProfile}
+            />
+          </div>
+        </div>
       )}
-      <main className="flex-1 overflow-auto bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
-        {canAccessFullDashboard ? (
-          <div className="p-6 lg:p-8">{children}</div>
-        ) : (
-          <PendingApprovalWrapper
-            userId={user.id}
-            email={user.email ?? ""}
-            fullName={profile?.full_name ?? ""}
-            role={role}
-            hasPlayerProfile={hasPlayerProfile}
-          />
-        )}
-      </main>
     </div>
   );
 }
