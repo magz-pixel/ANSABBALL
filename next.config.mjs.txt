@@ -1,0 +1,10 @@
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  swcMinify: false,  // Disables SWC → uses Babel instead (fixes Windows binary issues)
+};
+
+export default nextConfig;
+
+  experimental: {
+    forceSwcTransforms: false,
+  },
