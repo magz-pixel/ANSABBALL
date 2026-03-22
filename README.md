@@ -96,6 +96,10 @@ See **[docs/MOBILE_AND_BROWSER.md](./docs/MOBILE_AND_BROWSER.md)** — responsiv
 
 **Homepage & programs:** academy photos in **`public/`** (hero, gallery, banners). **Store:** product photos are defined in **`lib/merchandise.ts`** (stock images by default; swap for your own shots under `public/`). See **[docs/SITE_IMAGES.md](./docs/SITE_IMAGES.md)**.
 
+**Player signup:** what the registration + profile forms collect — **[docs/PLAYER_REGISTRATION.md](./docs/PLAYER_REGISTRATION.md)**. Passport-style photo uploads use Supabase Storage (`player-photos` bucket); run migration **`supabase/migrations/20260322000000_player_photos_storage.sql`** on your project.
+
+**Participation consent:** table `player_consents` + PDF API — run **`supabase/migrations/20260323000000_player_consents.sql`**. Details **[docs/CONSENT_FORM_DESIGN.md](./docs/CONSENT_FORM_DESIGN.md)**.
+
 ## Routes
 
 | Route | Description |

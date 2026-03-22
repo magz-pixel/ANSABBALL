@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DownloadPlayerReportButton } from "@/components/dashboard/download-player-report-button";
+import { DownloadConsentPdfButton } from "@/components/dashboard/download-consent-pdf-button";
 import { PlayerEvaluationForm } from "@/components/dashboard/player-evaluation-form";
 import { EvaluationCategoryLineChart } from "@/components/dashboard/evaluation-category-line-chart";
 import {
@@ -43,6 +44,7 @@ export function PlayerProfileClient({
   initialLegacyLogs,
   canEdit = false,
   showPdfCard = true,
+  showConsentPdfCard = true,
 }: {
   playerId: string;
   playerName: string;
@@ -51,6 +53,8 @@ export function PlayerProfileClient({
   canEdit?: boolean;
   /** Hide when parent page already has a download button */
   showPdfCard?: boolean;
+  /** Signed participation consent PDF (staff & linked parent) */
+  showConsentPdfCard?: boolean;
 }) {
   const latestEvaluation = useMemo(() => {
     if (!initialEvaluations.length) return null;
@@ -203,21 +207,39 @@ export function PlayerProfileClient({
         </Card>
       )}
 
-      {showPdfCard ? (
+      {showPdfCard || showConsentPdfCard ? (
         <Card>
           <CardHeader>
-            <CardTitle>PDF report</CardTitle>
+            <CardTitle>Documents</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-sm text-black/70">
-              Printable evaluation-style report with category summary, detailed
-              ratings, comments, and attendance.
-            </p>
-            <DownloadPlayerReportButton
-              playerId={playerId}
-              playerName={playerName}
-              className="mt-4"
-            />
+          <CardContent className="space-y-6">
+            {showPdfCard ? (
+              <div>
+                <p className="text-sm font-medium text-[#001F3F]">Evaluation report</p>
+                <p className="mt-1 text-sm text-black/70">
+                  Printable evaluation-style report with category summary, detailed
+                  ratings, comments, and attendance.
+                </p>
+                <DownloadPlayerReportButton
+                  playerId={playerId}
+                  playerName={playerName}
+                  className="mt-3"
+                />
+              </div>
+            ) : null}
+            {showConsentPdfCard ? (
+              <div>
+                <p className="text-sm font-medium text-[#001F3F]">Participation consent</p>
+                <p className="mt-1 text-sm text-black/70">
+                  Signed consent for the current version on file.
+                </p>
+                <DownloadConsentPdfButton
+                  playerId={playerId}
+                  playerName={playerName}
+                  className="mt-3"
+                />
+              </div>
+            ) : null}
           </CardContent>
         </Card>
       ) : null}

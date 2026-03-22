@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+
+const PHOTO_MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+const ACCEPT_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 interface PlayerProfileFormProps {
   userId: string;
@@ -16,6 +20,11 @@ interface PlayerProfileFormProps {
 export function PlayerProfileForm({ userId, defaultName, onComplete }: PlayerProfileFormProps) {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const photoPreview = useMemo(() => {
+    if (!photoFile) return null;
+    return URL.createObjectURL(photoFile);
+  }, [photoFile]);
   const [form, setForm] = useState({
     name: defaultName || "",
     age: "",
@@ -31,10 +40,63 @@ export function PlayerProfileForm({ userId, defaultName, onComplete }: PlayerPro
     photo_url: "",
   });
 
+  useEffect(() => {
+    if (!photoPreview) return;
+    return () => URL.revokeObjectURL(photoPreview);
+  }, [photoPreview]);
+
+  async function uploadPlayerPhoto(file: File): Promise<string | null> {
+    const supabase = createClient();
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    const safeExt =
+      ext === "jpg" || ext === "jpeg" || ext === "png" || ext === "webp" ? ext : "jpg";
+    const path = `${userId}/${Date.now()}-passport.${safeExt}`;
+    const { error } = await supabase.storage.from("player-photos").upload(path, file, {
+      cacheControl: "3600",
+      upsert: true,
+      contentType: file.type || `image/${safeExt === "jpg" ? "jpeg" : safeExt}`,
+    });
+    if (error) {
+      console.error(error);
+      return null;
+    }
+    const { data } = supabase.storage.from("player-photos").getPublicUrl(path);
+    return data.publicUrl;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     const supabase = createClient();
+
+    let resolvedPhotoUrl = form.photo_url.trim();
+    if (photoFile) {
+      if (photoFile.size > PHOTO_MAX_BYTES) {
+        alert("Photo must be 5 MB or smaller.");
+        setLoading(false);
+        return;
+      }
+      if (!ACCEPT_TYPES.includes(photoFile.type)) {
+        alert("Please use a JPEG, PNG, or WebP image.");
+        setLoading(false);
+        return;
+      }
+      const uploaded = await uploadPlayerPhoto(photoFile);
+      if (!uploaded) {
+        alert("Could not upload photo. Check your connection and try again.");
+        setLoading(false);
+        return;
+      }
+      resolvedPhotoUrl = uploaded;
+    }
+
+    if (!resolvedPhotoUrl) {
+      alert(
+        "Please upload a passport-style photo (or paste an image URL in the optional field below)."
+      );
+      setLoading(false);
+      return;
+    }
 
     let parentId: string | null = null;
     if (form.parent_email.trim()) {
@@ -56,10 +118,17 @@ export function PlayerProfileForm({ userId, defaultName, onComplete }: PlayerPro
       parent_id: parentId,
       status: "pending",
       payment_status: "pending",
+      photo_url: resolvedPhotoUrl,
     };
+    if (form.height_cm.trim()) {
+      insertData.height_cm = parseInt(form.height_cm, 10);
+    }
+    if (form.weight_kg.trim()) {
+      insertData.weight_kg = parseFloat(form.weight_kg);
+    }
     if (form.parent_name.trim()) insertData.parent_name = form.parent_name.trim();
     if (form.parent_phone.trim()) insertData.parent_phone = form.parent_phone.trim();
-    if (form.photo_url.trim()) insertData.photo_url = form.photo_url.trim();
+
     const { error } = await supabase.from("players").insert(insertData);
 
     setLoading(false);
@@ -89,20 +158,76 @@ export function PlayerProfileForm({ userId, defaultName, onComplete }: PlayerPro
         <CardDescription>
           Help Coach Brian know you better. This info will appear on your player card once approved.
         </CardDescription>
+        <p className="mt-3 text-sm text-black/70">
+          <strong>We collect:</strong> passport-style photo, full name, age, gender, height/weight,
+          position, school or independent enrollment, and parent/guardian contact details (name, email,
+          phone) so we can link a parent account if they already use ANSA.
+        </p>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="rounded-lg border border-[#0066CC]/20 bg-[#0066CC]/5 p-4">
+            <Label htmlFor="player-photo" className="text-base font-semibold text-[#001F3F]">
+              Passport-style photo *
+            </Label>
+            <p className="mt-1 text-sm text-black/75">
+              Upload a <strong>clear, recent</strong> photo of your face — like a passport or school ID
+              (head and shoulders, good lighting, plain background if possible). Max 5 MB. JPEG, PNG,
+              or WebP.
+            </p>
+            <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-start">
+              <div className="flex flex-col gap-2">
+                <Input
+                  id="player-photo"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="block w-full max-w-sm cursor-pointer text-sm file:mr-4 file:rounded-md file:border-0 file:bg-[#0066CC] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-700"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0] ?? null;
+                    setPhotoFile(f);
+                    if (f) setForm((prev) => ({ ...prev, photo_url: "" }));
+                  }}
+                />
+                <p className="text-xs text-black/55">
+                  Prefer upload. If you can&apos;t upload right now, use the optional URL field below
+                  instead.
+                </p>
+              </div>
+              {photoPreview ? (
+                <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+                  <Image
+                    src={photoPreview}
+                    alt="Preview"
+                    fill
+                    className="object-cover"
+                    sizes="112px"
+                    unoptimized
+                  />
+                </div>
+              ) : null}
+            </div>
+          </div>
+
           <div>
-            <Label htmlFor="photo_url">Profile Photo URL (optional)</Label>
+            <Label htmlFor="photo_url">Image URL (optional alternative)</Label>
             <Input
               id="photo_url"
               type="url"
               value={form.photo_url}
-              onChange={(e) => setForm((f) => ({ ...f, photo_url: e.target.value }))}
-              placeholder="https://... (headshot image link)"
+              onChange={(e) => {
+                const v = e.target.value;
+                setForm((f) => ({ ...f, photo_url: v }));
+                if (v.trim()) setPhotoFile(null);
+              }}
+              placeholder="https://... only if you are not uploading a file above"
+              disabled={!!photoFile}
             />
-            <p className="mt-1 text-xs text-black/60">Paste a link to your photo. Leave blank for a placeholder.</p>
+            <p className="mt-1 text-xs text-black/60">
+              Use this only if you already have your photo hosted online. Leave blank when uploading a
+              file.
+            </p>
           </div>
+
           <div>
             <Label htmlFor="name">Full Name *</Label>
             <Input

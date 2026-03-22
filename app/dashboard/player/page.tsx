@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SkillRadarChart } from "@/components/dashboard/skill-radar-chart";
 import { getPlayerPhotoUrl } from "@/lib/player-avatar";
+import { DownloadConsentPdfButton } from "@/components/dashboard/download-consent-pdf-button";
 
 const SKILLS = ["dribbling", "shooting", "defense", "free_throws", "vertical", "passing"];
 
@@ -71,6 +72,22 @@ export default async function PlayerProfilePage() {
         </CardHeader>
         <CardContent>
           <SkillRadarChart data={latestBySkill} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Participation consent</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-black/70">
+            Download a PDF copy of your signed consent (once on file).
+          </p>
+          <DownloadConsentPdfButton
+            playerId={player.id}
+            playerName={player.name}
+            className="mt-3"
+          />
         </CardContent>
       </Card>
 

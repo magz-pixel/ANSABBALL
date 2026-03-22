@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { MobileDashboardDrawer } from "@/components/dashboard/mobile-dashboard-drawer";
 import { PendingApprovalWrapper } from "@/components/dashboard/pending-approval-wrapper";
+import { ConsentRedirect } from "@/components/dashboard/consent-redirect";
+import { getFirstMissingConsentPlayer } from "@/lib/get-consent-status";
 
 export const dynamic = "force-dynamic";
 
@@ -60,6 +62,12 @@ export default async function DashboardLayout({
   const isAdminOrCoach = role === "admin" || role === "coach";
   const canAccessFullDashboard = isAdminOrCoach || approvalStatus === "approved";
 
+  const dbClient = createAdminClient() ?? supabase;
+  let missingConsent: { playerId: string; playerName: string } | null = null;
+  if (profile && (role === "player" || role === "parent")) {
+    missingConsent = await getFirstMissingConsentPlayer(dbClient, user.id, role);
+  }
+
   if (!profile) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 p-6">
@@ -96,6 +104,7 @@ export default async function DashboardLayout({
     <div className="flex min-h-screen flex-col bg-gray-50 lg:flex-row">
       {canAccessFullDashboard ? (
         <>
+          <ConsentRedirect />
           <DashboardSidebar role={role} />
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
             <MobileDashboardDrawer role={role} />
@@ -113,6 +122,7 @@ export default async function DashboardLayout({
               fullName={profile?.full_name ?? ""}
               role={role}
               hasPlayerProfile={hasPlayerProfile}
+              missingConsent={missingConsent}
             />
           </div>
         </div>

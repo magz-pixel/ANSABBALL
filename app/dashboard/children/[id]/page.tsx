@@ -7,6 +7,7 @@ import { PlayerProfileClient } from "@/components/dashboard/player-profile-clien
 import type { EvaluationSnapshot } from "@/components/dashboard/player-profile-client";
 import { getPlayerPhotoUrl } from "@/lib/player-avatar";
 import { DownloadPlayerReportButton } from "@/components/dashboard/download-player-report-button";
+import { DownloadConsentPdfButton } from "@/components/dashboard/download-consent-pdf-button";
 
 export default async function ChildProfilePage({
   params,
@@ -86,11 +87,14 @@ export default async function ChildProfilePage({
         >
           ← Back to My Children
         </Link>
-        <DownloadPlayerReportButton
-          playerId={id}
-          playerName={player.name}
-          variant="default"
-        />
+        <div className="flex flex-wrap gap-2">
+          <DownloadPlayerReportButton
+            playerId={id}
+            playerName={player.name}
+            variant="default"
+          />
+          <DownloadConsentPdfButton playerId={id} playerName={player.name} variant="outline" />
+        </div>
       </div>
 
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-8">
@@ -119,6 +123,7 @@ export default async function ChildProfilePage({
         initialLegacyLogs={progress ?? []}
         canEdit={false}
         showPdfCard={false}
+        showConsentPdfCard={false}
       />
 
       <Card>
