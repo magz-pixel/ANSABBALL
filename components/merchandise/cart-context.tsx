@@ -76,7 +76,7 @@ export function MerchandiseCartProvider({ children }: { children: ReactNode }) {
   const addItem = useCallback(
     (productId: string, quantity = 1, size?: string) => {
       const product = getProductById(productId);
-      if (!product) return;
+      if (!product || product.contactForQuote) return;
       const defaultSize = product.sizes?.[0];
       const resolvedSize = product.sizes?.length ? size ?? defaultSize : undefined;
 
@@ -131,7 +131,9 @@ export function MerchandiseCartProvider({ children }: { children: ReactNode }) {
       const product = getProductById(line.productId);
       if (!product) continue;
       linesWithProducts.push({ line, product });
-      subtotalKes += product.priceKes * line.quantity;
+      if (!product.contactForQuote) {
+        subtotalKes += product.priceKes * line.quantity;
+      }
       itemCount += line.quantity;
     }
     return {

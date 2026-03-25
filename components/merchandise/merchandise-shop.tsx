@@ -2,14 +2,17 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import {
   MERCH_CATEGORIES,
   PRODUCTS,
-  formatKes,
+  formatProductPrice,
+  whatsappInquiryUrl,
   type MerchCategory,
   type Product,
 } from "@/lib/merchandise";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { useMerchCart } from "./cart-context";
 
 export function MerchandiseShop() {
@@ -24,10 +27,10 @@ export function MerchandiseShop() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       <p className="mb-6 text-center text-sm text-gray-600 md:text-base">
-        Official ANSA stock — balls, socks, protection, and officiating gear.
-        Add items to your cart, then pay with{" "}
-        <strong className="text-[#001F3F]">M-Pesa</strong> using your order
-        number.
+        Official ANSA stock — balls, apparel, equipment, protection, and
+        officiating. Add priced items to your cart and pay with{" "}
+        <strong className="text-[#001F3F]">M-Pesa</strong>. Court builds and
+        custom quotes: WhatsApp us from the listing.
       </p>
 
       {/* Category filters */}
@@ -91,7 +94,7 @@ export function MerchandiseShop() {
                 </p>
               ) : null}
               <p className="mt-4 text-xl font-bold text-[#0066CC]">
-                {formatKes(product.priceKes)}
+                {formatProductPrice(product)}
               </p>
               <ProductAddControls product={product} onAdd={addItem} />
             </div>
@@ -113,6 +116,33 @@ function ProductAddControls({
   const hasSizes = Boolean(product.sizes?.length);
   const optionLabel =
     product.category === "officiating" ? "Colour" : "Size";
+
+  if (product.contactForQuote) {
+    const wa = whatsappInquiryUrl(
+      `Hi ANSA — I'd like a quote for: ${product.name}`
+    );
+    return (
+      <div className="mt-4 space-y-3 border-t border-gray-100 pt-4">
+        <Link
+          href={wa}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            buttonVariants(),
+            "w-full bg-[#25D366] font-semibold text-white hover:bg-[#20bd5a]"
+          )}
+        >
+          WhatsApp — request quote
+        </Link>
+        <p className="text-center text-xs text-gray-500">
+          Or call{" "}
+          <a href="tel:+254718082452" className="text-[#0066CC] underline">
+            +254 718 082 452
+          </a>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-4 space-y-3 border-t border-gray-100 pt-4">
