@@ -24,7 +24,7 @@ export function MerchandiseShop() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       <p className="mb-6 text-center text-sm text-gray-600 md:text-base">
-        Official ANSA gear — basketball shoes, kits, and training equipment.
+        Official ANSA stock — balls, socks, protection, and officiating gear.
         Add items to your cart, then pay with{" "}
         <strong className="text-[#001F3F]">M-Pesa</strong> using your order
         number.
@@ -85,6 +85,11 @@ export function MerchandiseShop() {
               <p className="mt-2 flex-1 text-sm leading-relaxed text-gray-600">
                 {product.shortDescription}
               </p>
+              {product.variantNote ? (
+                <p className="mt-2 text-xs leading-relaxed text-gray-500">
+                  {product.variantNote}
+                </p>
+              ) : null}
               <p className="mt-4 text-xl font-bold text-[#0066CC]">
                 {formatKes(product.priceKes)}
               </p>
@@ -106,12 +111,14 @@ function ProductAddControls({
 }) {
   const [size, setSize] = useState(product.sizes?.[0] ?? "");
   const hasSizes = Boolean(product.sizes?.length);
+  const optionLabel =
+    product.category === "officiating" ? "Colour" : "Size";
 
   return (
     <div className="mt-4 space-y-3 border-t border-gray-100 pt-4">
       {hasSizes ? (
         <label className="block text-xs font-medium text-gray-700">
-          Size
+          {optionLabel}
           <select
             className="mt-1 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-[#001F3F]"
             value={size}
