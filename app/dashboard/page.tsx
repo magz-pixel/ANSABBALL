@@ -30,13 +30,13 @@ export default async function DashboardPage() {
     return (
       <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-amber-900">
         <h2 className="text-lg font-semibold">Pending Approval</h2>
-        <p className="mt-2 text-sm">Your account is awaiting approval. Contact Coach Brian.</p>
+        <p className="mt-2 text-sm">Your account is awaiting approval. Contact the ANSA Admin.</p>
       </div>
     );
   }
 
   if (role === "admin" || role === "coach") {
-    return <AdminDashboard userName={profile?.full_name ?? "Coach Brian"} />;
+    return <AdminDashboard userName={profile?.full_name ?? "ANSA Admin"} />;
   }
   if (role === "parent") {
     return <ParentDashboard />;

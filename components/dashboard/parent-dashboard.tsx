@@ -72,7 +72,7 @@ export async function ParentDashboard() {
             <CardContent className="py-12 text-center">
               <p className="text-black/70">No linked children yet.</p>
               <p className="mt-2 text-sm text-black/60">
-                Contact Coach Brian to link your child&apos;s profile.
+                Contact the ANSA Admin to link your child&apos;s profile.
               </p>
             </CardContent>
           </Card>

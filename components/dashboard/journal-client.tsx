@@ -46,7 +46,7 @@ export function JournalClient({
     return (
       <Card>
         <CardContent className="py-12 text-center text-black/60">
-          No player profile linked. Contact Coach Brian.
+          No player profile linked. Contact the ANSA Admin.
         </CardContent>
       </Card>
     );

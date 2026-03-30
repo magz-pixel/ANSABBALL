@@ -19,7 +19,7 @@ ansa-basketball-academy/
 │   ├── about/          # About page
 │   ├── programs/       # Programs page
 │   ├── scholarships/   # Scholarships page
-│   ├── merchandise/    # Store (shoes, kits, gear) + cart + M-Pesa checkout
+│   ├── merchandise/    # Store (balls, apparel, equipment, court builds) + cart + M-Pesa checkout
 │   ├── dashboard/      # Protected dashboard
 │   ├── layout.tsx      # Root layout with Navbar
 │   ├── page.tsx        # Homepage
@@ -88,6 +88,10 @@ Open [http://localhost:3000](http://localhost:3000).
 
 See **[docs/VERCEL.md](./docs/VERCEL.md)** for env vars, Supabase redirect URLs, and Git push steps.
 
+## Client handover
+
+See **[docs/HANDOVER.md](./docs/HANDOVER.md)** for cleaning demo data and transferring the admin account.
+
 ## Mobile & browsers
 
 See **[docs/MOBILE_AND_BROWSER.md](./docs/MOBILE_AND_BROWSER.md)** — responsive dashboard drawer, touch targets, overflow fixes.
@@ -108,7 +112,7 @@ See **[docs/MOBILE_AND_BROWSER.md](./docs/MOBILE_AND_BROWSER.md)** — responsiv
 | `/about` | About ANSA |
 | `/programs` | Programs |
 | `/scholarships` | Scholarships |
-| `/merchandise` | Store (basketball shoes, kits, gear) |
+| `/merchandise` | Store (balls, apparel, equipment, court builds) |
 | `/merchandise/cart` | Shopping cart |
 | `/merchandise/checkout` | M-Pesa instructions + order form |
 | `/auth/login` | Login |

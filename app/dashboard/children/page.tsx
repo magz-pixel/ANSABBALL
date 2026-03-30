@@ -53,7 +53,7 @@ export default async function ChildrenPage() {
       {(!children || children.length === 0) && (
         <Card>
           <CardContent className="py-12 text-center text-black/60">
-            No linked children. Contact Coach Brian.
+            No linked children. Contact the ANSA Admin.
           </CardContent>
         </Card>
       )}

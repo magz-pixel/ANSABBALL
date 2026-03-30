@@ -12,7 +12,7 @@ export function DashboardPendingApproval({ email, fullName }: DashboardPendingAp
         <CardHeader>
           <CardTitle className="text-2xl">Account Pending Approval</CardTitle>
           <CardDescription>
-            Welcome, {fullName || email}! Your account is awaiting verification by Coach Brian.
+            Welcome, {fullName || email}! Your account is awaiting verification by the ANSA Admin.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -22,11 +22,11 @@ export function DashboardPendingApproval({ email, fullName }: DashboardPendingAp
           </p>
           <ul className="list-inside list-disc space-y-2 text-black/80">
             <li>Completing registration and payment (M-Pesa or in-person)</li>
-            <li>Coach Brian verifying your enrollment</li>
+            <li>An ANSA admin verifying your enrollment</li>
             <li>Activating your player profile (if applicable)</li>
           </ul>
           <p className="text-black/80">
-            Questions? Contact Coach Brian at{" "}
+            Questions? Contact the ANSA Admin at{" "}
             <a href="tel:0718082452" className="font-medium text-[#0066CC] hover:underline">
               0718082452
             </a>{" "}

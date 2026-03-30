@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-export async function AdminDashboard({ userName = "Coach Brian" }: { userName?: string }) {
+export async function AdminDashboard({ userName = "ANSA Admin" }: { userName?: string }) {
   const supabase = await createClient();
   const admin = createAdminClient();
 

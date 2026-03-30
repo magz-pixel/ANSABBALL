@@ -28,7 +28,7 @@ export default async function PlayerProfilePage() {
         <h1 className="text-3xl font-bold text-[#001F3F]">My Profile</h1>
         <Card>
           <CardContent className="py-12 text-center text-black/60">
-            No player profile linked. Contact Coach Brian.
+            No player profile linked. Contact the ANSA Admin.
           </CardContent>
         </Card>
       </div>

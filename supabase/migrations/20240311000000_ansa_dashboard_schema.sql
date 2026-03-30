@@ -4,7 +4,7 @@
 -- Add 'coach' to user_role enum
 ALTER TYPE user_role ADD VALUE 'coach';
 
--- Add approval_status to users (Coach Brian approves before full access)
+-- Add approval_status to users (admin approves before full access)
 ALTER TABLE public.users
   ADD COLUMN IF NOT EXISTS approval_status TEXT NOT NULL DEFAULT 'pending'
     CHECK (approval_status IN ('pending', 'approved', 'rejected'));

@@ -156,7 +156,7 @@ export function PlayerProfileForm({ userId, defaultName, onComplete }: PlayerPro
       <CardHeader>
         <CardTitle>Complete Your Player Profile</CardTitle>
         <CardDescription>
-          Help Coach Brian know you better. This info will appear on your player card once approved.
+          Help the ANSA Admin know you better. This info will appear on your player card once approved.
         </CardDescription>
         <p className="mt-3 text-sm text-black/70">
           <strong>We collect:</strong> passport-style photo, full name, age, gender, height/weight,
