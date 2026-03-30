@@ -24,7 +24,7 @@ export default function RegisterPage() {
     setError(null);
     setMessage(null);
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -41,7 +41,20 @@ export default function RegisterPage() {
       return;
     }
 
-    setMessage("Check your email for the confirmation link!");
+    // When email confirmation is disabled, Supabase returns a session immediately.
+    if (data.session) {
+      await supabase.rpc("sync_public_user_role_from_auth");
+      setMessage("Account created. Taking you to the dashboard…");
+      router.push("/dashboard");
+      router.refresh();
+      setLoading(false);
+      return;
+    }
+
+    // Email confirmation enabled: no session until they click the link.
+    setMessage(
+      "If your project sends confirmation emails, check your inbox. If not, you can sign in now — your role will sync automatically when you log in."
+    );
     router.refresh();
     setLoading(false);
   };

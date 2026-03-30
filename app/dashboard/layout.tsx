@@ -5,6 +5,7 @@ import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { MobileDashboardDrawer } from "@/components/dashboard/mobile-dashboard-drawer";
 import { PendingApprovalWrapper } from "@/components/dashboard/pending-approval-wrapper";
 import { ConsentRedirect } from "@/components/dashboard/consent-redirect";
+import { SyncRoleOnSession } from "@/components/auth/sync-role-on-session";
 import { getFirstMissingConsentPlayer } from "@/lib/get-consent-status";
 
 export const dynamic = "force-dynamic";
@@ -102,6 +103,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 lg:flex-row">
+      <SyncRoleOnSession />
       {canAccessFullDashboard ? (
         <>
           <ConsentRedirect />

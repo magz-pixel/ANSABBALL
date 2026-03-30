@@ -28,6 +28,8 @@ export default function LoginPage() {
       return;
     }
 
+    await supabase.rpc("sync_public_user_role_from_auth");
+
     router.push("/dashboard");
     router.refresh();
     setLoading(false);

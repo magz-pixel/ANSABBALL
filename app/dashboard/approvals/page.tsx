@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { redirect } from "next/navigation";
 import { ApprovalsClient } from "@/components/dashboard/approvals-client";
 
 export default async function ApprovalsPage() {
@@ -19,12 +20,8 @@ export default async function ApprovalsPage() {
     }
   }
 
-  if (profile?.role !== "admin" && profile?.role !== "coach") {
-    return (
-      <div className="rounded-lg border border-amber-200 bg-amber-50 p-6 text-amber-800">
-        You do not have permission to view this page.
-      </div>
-    );
+  if (profile?.role !== "admin") {
+    redirect("/dashboard");
   }
 
   const client = createAdminClient() ?? supabase;

@@ -68,6 +68,9 @@ export function AttendanceClient({
 
   async function handleSave() {
     setLoading(true);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     for (const p of players) {
       await supabase.from("attendance").upsert(
         {
@@ -75,6 +78,7 @@ export function AttendanceClient({
           player_id: p.id,
           present: p.present ?? true,
           notes: notes[p.id] ?? null,
+          created_by: user?.id ?? null,
         },
         { onConflict: "session_date,player_id" }
       );

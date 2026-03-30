@@ -1,17 +1,19 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getRoleAwareServerClient } from "@/lib/supabase/role-data-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddAnnouncementButton } from "@/components/dashboard/add-announcement-button";
 
 export default async function AnnouncementsPage() {
   const supabase = await createClient();
   const admin = createAdminClient();
-  const client = admin ?? supabase;
   const { data: { user } } = await supabase.auth.getUser();
   let profile = user ? (await supabase.from("users").select("role").eq("id", user.id).single()).data : null;
   if (!profile && admin && user) {
     profile = (await admin.from("users").select("role").eq("id", user.id).single()).data;
   }
+  const role = profile?.role ?? "player";
+  const client = getRoleAwareServerClient(role, supabase, admin);
   const canManage = profile?.role === "admin" || profile?.role === "coach";
   const { data: announcements } = await client
     .from("announcements")
