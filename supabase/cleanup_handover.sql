@@ -21,8 +21,16 @@ delete from public.goals;
 delete from public.announcements;
 
 -- Evaluations / consent (if present)
-delete from public.player_evaluations;
-delete from public.player_consents;
+do $$
+begin
+  if to_regclass('public.player_evaluations') is not null then
+    execute 'delete from public.player_evaluations';
+  end if;
+  if to_regclass('public.player_consents') is not null then
+    execute 'delete from public.player_consents';
+  end if;
+end
+$$;
 
 -- 2) Clear core entities (leaves player_groups intact)
 delete from public.players;

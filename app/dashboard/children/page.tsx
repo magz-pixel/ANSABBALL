@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { getPlayerPhotoUrl } from "@/lib/player-avatar";
 
 export default async function ChildrenPage() {
@@ -20,9 +21,16 @@ export default async function ChildrenPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-[#001F3F]">My Children</h1>
-        <p className="mt-1 text-black/70">View your children&apos;s profiles</p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-[#001F3F]">My Children</h1>
+          <p className="mt-1 text-black/70">View your children&apos;s profiles</p>
+        </div>
+        <Link href="/dashboard/children/add">
+          <Button className="bg-[#0066CC] text-white hover:bg-blue-700">
+            Add another child
+          </Button>
+        </Link>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

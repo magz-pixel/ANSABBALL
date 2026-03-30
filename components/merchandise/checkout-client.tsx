@@ -152,19 +152,13 @@ export function CheckoutClient() {
           <li>
             Open <strong>M-Pesa</strong> on your phone →{" "}
             <strong>Lipa na M-Pesa</strong> →{" "}
-            <strong>Buy Goods and Services</strong>.
+            <strong>Paybill</strong>.
           </li>
           <li>
-            Enter <strong>Till Number: {MPESA_CONFIG.tillNumber}</strong>
-            <span className="text-amber-800">
-              {" "}
-              (placeholder — replace with your real Till in{" "}
-              <code className="rounded bg-gray-100 px-1 text-xs">
-                lib/merchandise.ts
-              </code>
-              )
-            </span>
-            .
+            Enter <strong>Paybill: {MPESA_CONFIG.paybillNumber}</strong>.
+          </li>
+          <li>
+            Enter <strong>Account number: {MPESA_CONFIG.paybillAccountNumber}</strong>.
           </li>
           <li>
             Enter amount:{" "}
@@ -180,13 +174,11 @@ export function CheckoutClient() {
           </li>
         </ol>
 
-        {MPESA_CONFIG.paybillNumber ? (
-          <p className="mt-4 text-sm text-gray-600">
-            <strong>Paybill option:</strong> Paybill{" "}
-            {MPESA_CONFIG.paybillNumber}, account{" "}
-            <span className="font-mono">{orderNumber}</span>.
-          </p>
-        ) : null}
+        <p className="mt-4 text-sm text-gray-600">
+          <strong>Paybill:</strong> {MPESA_CONFIG.paybillNumber} ·{" "}
+          <strong>Account:</strong>{" "}
+          <span className="font-mono">{MPESA_CONFIG.paybillAccountNumber}</span>
+        </p>
 
         <p className="mt-4 rounded-lg bg-[#001F3F]/5 p-3 text-sm text-gray-700">
           <strong>Need help?</strong> Call{" "}

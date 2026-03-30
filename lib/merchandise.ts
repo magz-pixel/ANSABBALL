@@ -267,8 +267,10 @@ export function formatProductPrice(product: Product): string {
 
 export const MPESA_CONFIG = {
   businessName: "ANSA Basketball Academy",
-  tillNumber: "0000000",
-  paybillNumber: "",
+  // Prefer Paybill for payments; Till left blank intentionally.
+  tillNumber: "",
+  paybillNumber: "400200",
+  paybillAccountNumber: "40035945",
   tagline: "Pay via M-Pesa. Use your order number as the account reference where applicable.",
   supportPhone: "0718082452",
   supportWhatsAppHint:

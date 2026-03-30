@@ -32,6 +32,12 @@ export function PlayerProfileForm({ userId, defaultName, onComplete }: PlayerPro
     height_cm: "",
     weight_kg: "",
     position: "",
+    expertise_level: "beginner" as
+      | "beginner"
+      | "developing"
+      | "intermediate"
+      | "advanced"
+      | "elite",
     school: "",
     enrollment_type: "independent" as "school" | "independent",
     parent_name: "",
@@ -57,7 +63,7 @@ export function PlayerProfileForm({ userId, defaultName, onComplete }: PlayerPro
       contentType: file.type || `image/${safeExt === "jpg" ? "jpeg" : safeExt}`,
     });
     if (error) {
-      console.error(error);
+      console.error("player photo upload error", error);
       return null;
     }
     const { data } = supabase.storage.from("player-photos").getPublicUrl(path);
@@ -83,7 +89,9 @@ export function PlayerProfileForm({ userId, defaultName, onComplete }: PlayerPro
       }
       const uploaded = await uploadPlayerPhoto(photoFile);
       if (!uploaded) {
-        alert("Could not upload photo. Check your connection and try again.");
+        alert(
+          "Could not upload photo. If this keeps happening, ask the admin to run the Supabase migration `20260322000000_player_photos_storage.sql` (player-photos bucket + upload policy), then try again."
+        );
         setLoading(false);
         return;
       }
@@ -113,6 +121,7 @@ export function PlayerProfileForm({ userId, defaultName, onComplete }: PlayerPro
       age: form.age ? parseInt(form.age, 10) : null,
       gender: form.gender.trim() || null,
       position: form.position.trim() || null,
+      expertise_level: form.expertise_level,
       school: form.enrollment_type === "school" ? form.school.trim() || null : null,
       player_user_id: userId,
       parent_id: parentId,
@@ -262,6 +271,29 @@ export function PlayerProfileForm({ userId, defaultName, onComplete }: PlayerPro
                 <option value="F">Female</option>
               </select>
             </div>
+          </div>
+          <div>
+            <Label htmlFor="expertise_level">Expertise level</Label>
+            <select
+              id="expertise_level"
+              value={form.expertise_level}
+              onChange={(e) =>
+                setForm((f) => ({
+                  ...f,
+                  expertise_level: e.target.value as typeof f.expertise_level,
+                }))
+              }
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="beginner">Beginner</option>
+              <option value="developing">Developing</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+              <option value="elite">Elite</option>
+            </select>
+            <p className="mt-1 text-xs text-black/60">
+              Helps coaches place players in the right training group.
+            </p>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>

@@ -27,6 +27,12 @@ export function AddPlayerModal({ open, onClose, groups = [] }: AddPlayerModalPro
     age: "",
     gender: "",
     school: "",
+    expertise_level: "beginner" as
+      | "beginner"
+      | "developing"
+      | "intermediate"
+      | "advanced"
+      | "elite",
     parent_email: "",
     group_id: "",
   });
@@ -50,6 +56,7 @@ export function AddPlayerModal({ open, onClose, groups = [] }: AddPlayerModalPro
       age: form.age ? parseInt(form.age, 10) : null,
       gender: form.gender.trim() || null,
       school: form.school.trim() || null,
+      expertise_level: form.expertise_level,
       parent_id: parentId,
       group_id: form.group_id || null,
       status: "pending",
@@ -61,7 +68,15 @@ export function AddPlayerModal({ open, onClose, groups = [] }: AddPlayerModalPro
       alert(error.message);
       return;
     }
-    setForm({ name: "", age: "", gender: "", school: "", parent_email: "", group_id: "" });
+    setForm({
+      name: "",
+      age: "",
+      gender: "",
+      school: "",
+      expertise_level: "beginner",
+      parent_email: "",
+      group_id: "",
+    });
     onClose();
     router.refresh();
   }
@@ -106,6 +121,26 @@ export function AddPlayerModal({ open, onClose, groups = [] }: AddPlayerModalPro
                 placeholder="M/F"
               />
             </div>
+          </div>
+          <div>
+            <Label htmlFor="expertise_level">Expertise level</Label>
+            <select
+              id="expertise_level"
+              value={form.expertise_level}
+              onChange={(e) =>
+                setForm((f) => ({
+                  ...f,
+                  expertise_level: e.target.value as typeof f.expertise_level,
+                }))
+              }
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="beginner">Beginner</option>
+              <option value="developing">Developing</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+              <option value="elite">Elite</option>
+            </select>
           </div>
           <div>
             <Label htmlFor="school">School</Label>
