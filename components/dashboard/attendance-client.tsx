@@ -12,7 +12,14 @@ interface Group {
   name: string;
 }
 
-export function AttendanceClient({ groups }: { groups: Group[] }) {
+export function AttendanceClient({
+  groups,
+  emptyHint,
+}: {
+  groups: Group[];
+  /** Shown when there are no groups (e.g. coach not assigned yet) */
+  emptyHint?: string;
+}) {
   const supabase = createClient();
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
@@ -75,6 +82,22 @@ export function AttendanceClient({ groups }: { groups: Group[] }) {
     setLoading(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  }
+
+  if (groups.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Session Attendance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-black/70">
+            {emptyHint ??
+              "No training groups are available yet. Create groups under Groups (admin) or ask an admin to assign you to a group."}
+          </p>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (

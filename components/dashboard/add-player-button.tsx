@@ -9,7 +9,14 @@ interface Group {
   name: string;
 }
 
-export function AddPlayerButton({ groups = [] }: { groups?: Group[] }) {
+export function AddPlayerButton({
+  groups = [],
+  requireGroup = false,
+}: {
+  groups?: Group[];
+  /** Coaches must pick a group; admins may leave unassigned */
+  requireGroup?: boolean;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -20,7 +27,12 @@ export function AddPlayerButton({ groups = [] }: { groups?: Group[] }) {
       >
         Add Player
       </Button>
-      <AddPlayerModal open={open} onClose={() => setOpen(false)} groups={groups} />
+      <AddPlayerModal
+        open={open}
+        onClose={() => setOpen(false)}
+        groups={groups}
+        requireGroup={requireGroup}
+      />
     </>
   );
 }

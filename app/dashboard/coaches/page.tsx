@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddCoachButton } from "@/components/dashboard/add-coach-button";
 
@@ -17,7 +18,7 @@ export default async function CoachesPage() {
   const { data: coaches } = await client
     .from("coaches")
     .select(`
-      id, bio, user_id,
+      id, bio, user_id, photo_url,
       users:user_id(full_name, email)
     `);
 
@@ -34,7 +35,24 @@ export default async function CoachesPage() {
       <div className="grid gap-4 sm:grid-cols-2">
         {coaches?.map((c) => (
           <Card key={c.id}>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-start gap-4">
+              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-gray-200">
+                {(c as { photo_url?: string | null }).photo_url ? (
+                  <Image
+                    src={(c as { photo_url: string }).photo_url}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    sizes="64px"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-xs text-black/40">
+                    —
+                  </div>
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
               <CardTitle>
                 {(c.users as { full_name?: string; email?: string } | null)?.full_name ??
                   (c.users as { full_name?: string; email?: string } | null)?.email ??
@@ -43,6 +61,7 @@ export default async function CoachesPage() {
               <p className="text-sm text-black/70">
                 {(c.users as { email?: string } | null)?.email ?? c.user_id?.slice(0, 8) + "..."}
               </p>
+              </div>
             </CardHeader>
             {c.bio && (
               <CardContent className="pt-0 text-sm text-black/70">{c.bio}</CardContent>

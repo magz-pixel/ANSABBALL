@@ -16,9 +16,16 @@ interface AddPlayerModalProps {
   open: boolean;
   onClose: () => void;
   groups?: Group[];
+  /** When true, a group must be selected (coach workflow) */
+  requireGroup?: boolean;
 }
 
-export function AddPlayerModal({ open, onClose, groups = [] }: AddPlayerModalProps) {
+export function AddPlayerModal({
+  open,
+  onClose,
+  groups = [],
+  requireGroup = false,
+}: AddPlayerModalProps) {
   const router = useRouter();
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
@@ -90,6 +97,12 @@ export function AddPlayerModal({ open, onClose, groups = [] }: AddPlayerModalPro
         <p className="mt-1 text-sm text-black/70">
           Create a new player profile. Parent will be linked if email exists.
         </p>
+        {groups.length === 0 && requireGroup && (
+          <p className="mt-4 rounded-md bg-amber-50 p-3 text-sm text-amber-900">
+            You need at least one assigned training group to add a player. Ask an admin to assign you to a
+            group under <strong>Groups</strong>.
+          </p>
+        )}
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
             <Label htmlFor="name">Name *</Label>
@@ -157,9 +170,10 @@ export function AddPlayerModal({ open, onClose, groups = [] }: AddPlayerModalPro
                 id="group_id"
                 value={form.group_id}
                 onChange={(e) => setForm((f) => ({ ...f, group_id: e.target.value }))}
+                required={requireGroup && groups.length > 0}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
-                <option value="">Select group</option>
+                <option value="">{requireGroup ? "Select group *" : "Select group (optional)"}</option>
                 {groups.map((g) => (
                   <option key={g.id} value={g.id}>{g.name}</option>
                 ))}
@@ -177,7 +191,11 @@ export function AddPlayerModal({ open, onClose, groups = [] }: AddPlayerModalPro
             />
           </div>
           <div className="flex gap-2 pt-4">
-            <Button type="submit" disabled={loading} className="bg-[#0066CC] hover:bg-blue-700">
+            <Button
+              type="submit"
+              disabled={loading || (requireGroup && groups.length === 0)}
+              className="bg-[#0066CC] hover:bg-blue-700"
+            >
               {loading ? "Adding..." : "Add Player"}
             </Button>
             <Button type="button" variant="outline" onClick={onClose}>

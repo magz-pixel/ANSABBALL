@@ -174,6 +174,12 @@ export default function RegisterPage() {
           </div>
         </div>
 
+        <p className="text-xs text-gray-500">
+          Signing in with Google does not send a role choice to the server — new accounts default to{" "}
+          <strong>player</strong>. If you are a coach, use email sign-up above and choose &quot;Coach&quot;,
+          or ask an admin to set your role after you register.
+        </p>
+
         <button
           type="button"
           onClick={handleGoogleLogin}

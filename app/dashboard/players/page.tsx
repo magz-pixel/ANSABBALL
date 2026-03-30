@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getRoleAwareServerClient } from "@/lib/supabase/role-data-client";
+import { getCoachAssignedGroupIds } from "@/lib/coach-scope";
 import Image from "next/image";
 import Link from "next/link";
 import { AddPlayerButton } from "@/components/dashboard/add-player-button";
@@ -8,7 +10,6 @@ import { getPlayerPhotoUrl } from "@/lib/player-avatar";
 export default async function PlayersPage() {
   const supabase = await createClient();
   const admin = createAdminClient();
-  const client = admin ?? supabase;
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -18,15 +19,36 @@ export default async function PlayersPage() {
     profile = (await admin.from("users").select("role").eq("id", user?.id ?? "").single()).data;
   }
 
+  const role = profile?.role ?? "player";
+  const client = getRoleAwareServerClient(role, supabase, admin);
+
   const canManage = profile?.role === "admin" || profile?.role === "coach";
 
-  const [{ data: players }, { data: groups }] = await Promise.all([
-    client.from("players").select(`
+  const { data: players } = await client
+    .from("players")
+    .select(
+      `
       id, name, age, gender, school, status, payment_status, join_date, photo_url,
       player_groups(name)
-    `).order("name"),
-    client.from("player_groups").select("id, name").order("name"),
-  ]);
+    `
+    )
+    .order("name");
+
+  let groups: { id: string; name: string }[] = [];
+  if (role === "coach" && user?.id) {
+    const ids = await getCoachAssignedGroupIds(supabase, user.id);
+    if (ids.length > 0) {
+      const { data: g } = await supabase
+        .from("player_groups")
+        .select("id, name")
+        .in("id", ids)
+        .order("name");
+      groups = g ?? [];
+    }
+  } else {
+    const { data: g } = await client.from("player_groups").select("id, name").order("name");
+    groups = g ?? [];
+  }
 
   return (
     <div className="space-y-6">
@@ -34,10 +56,12 @@ export default async function PlayersPage() {
         <div>
           <h1 className="text-3xl font-bold text-[#001F3F]">Players</h1>
           <p className="mt-1 text-black/70">
-            Players who sign up and get approved appear automatically. Add manually for parent&apos;s children or walk-ins.
+            {role === "coach"
+              ? "Players in your assigned training groups. Parents and players see the same attendance and evaluations."
+              : "Players who sign up and get approved appear automatically. Add manually for parent’s children or walk-ins."}
           </p>
         </div>
-        {canManage && <AddPlayerButton groups={groups ?? []} />}
+        {canManage && <AddPlayerButton groups={groups} requireGroup={role === "coach"} />}
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-lg shadow-gray-200/50">
@@ -70,7 +94,7 @@ export default async function PlayersPage() {
             </thead>
             <tbody>
               {players?.map((p) => (
-                <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
+                <tr key={p.id} className="border-b border-gray-100 transition-colors hover:bg-gray-50/50">
                   <td className="px-6 py-4">
                     <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-gray-200">
                       <Image
@@ -101,8 +125,8 @@ export default async function PlayersPage() {
                         p.status === "active"
                           ? "bg-green-100 text-green-800"
                           : p.status === "pending"
-                          ? "bg-amber-100 text-amber-800"
-                          : "bg-gray-100 text-gray-700"
+                            ? "bg-amber-100 text-amber-800"
+                            : "bg-gray-100 text-gray-700"
                       }`}
                     >
                       {p.status}
@@ -130,7 +154,9 @@ export default async function PlayersPage() {
         </div>
         {(!players || players.length === 0) && (
           <div className="py-16 text-center text-black/60">
-            No players yet. {canManage && "Add your first player above."}
+            No players yet.{" "}
+            {canManage && role === "admin" && "Add your first player above."}
+            {canManage && role === "coach" && "Ask an admin to assign you to a group, or add a player to one of your groups."}
           </div>
         )}
       </div>
