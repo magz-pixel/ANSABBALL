@@ -10,7 +10,7 @@ type CoachRow = {
   bio: string | null;
   user_id: string;
   photo_url: string | null;
-  users: { full_name?: string; email?: string } | null;
+  users: { full_name: string | null; email: string | null } | null;
 };
 
 function bucketByUserId<T extends Record<string, unknown>>(
@@ -51,12 +51,27 @@ export default async function CoachesPage() {
   }
   const canManage = profile?.role === "admin";
 
-  const { data: coaches } = await client.from("coaches").select(`
-      id, bio, user_id, photo_url,
-      users:user_id(full_name, email)
-    `);
+  const { data: coachRows } = await client
+    .from("coaches")
+    .select("id, bio, user_id, photo_url")
+    .order("created_at", { ascending: false });
 
-  const coachUserIds = (coaches ?? []).map((c) => c.user_id).filter(Boolean) as string[];
+  const coachUserIds = (coachRows ?? []).map((c) => c.user_id).filter(Boolean) as string[];
+
+  let userMap = new Map<string, { full_name: string | null; email: string | null }>();
+  if (coachUserIds.length > 0) {
+    const { data: userRows } = await client
+      .from("users")
+      .select("id, full_name, email")
+      .in("id", coachUserIds);
+    userMap = new Map((userRows ?? []).map((u) => [u.id, u]));
+  }
+
+  const coaches: CoachRow[] | null =
+    coachRows?.map((c) => ({
+      ...c,
+      users: userMap.get(c.user_id) ?? null,
+    })) ?? null;
 
   const [{ data: evalRows }, { data: progRows }, { data: attRows }] = await Promise.all([
     coachUserIds.length

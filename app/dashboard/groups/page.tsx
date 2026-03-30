@@ -4,6 +4,7 @@ import { getRoleAwareServerClient } from "@/lib/supabase/role-data-client";
 import { getCurrentUserProfile } from "@/lib/dashboard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddGroupButton } from "@/components/dashboard/add-group-button";
+import { DeleteGroupButton } from "@/components/dashboard/delete-group-button";
 import { GroupCoachAssign } from "@/components/dashboard/group-coach-assign";
 
 export default async function GroupsPage() {
@@ -82,8 +83,9 @@ export default async function GroupsPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {groups?.map((g) => (
           <Card key={g.id}>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-start justify-between gap-2">
               <CardTitle>{g.name}</CardTitle>
+              {isAdmin && <DeleteGroupButton groupId={g.id} groupName={g.name} />}
             </CardHeader>
             <CardContent>
               <p className="text-sm text-black/70">

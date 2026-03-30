@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { addCoachByEmail } from "@/app/actions/coaches";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +14,6 @@ interface AddCoachModalProps {
 
 export function AddCoachModal({ open, onClose }: AddCoachModalProps) {
   const router = useRouter();
-  const supabase = createClient();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [bio, setBio] = useState("");
@@ -25,40 +24,10 @@ export function AddCoachModal({ open, onClose }: AddCoachModalProps) {
     setLoading(true);
     setError(null);
 
-    const { data: user } = await supabase
-      .from("users")
-      .select("id, full_name")
-      .eq("email", email.trim().toLowerCase())
-      .single();
+    const result = await addCoachByEmail(email, bio);
 
-    if (!user) {
-      setError("No account found with that email. They need to sign up first.");
-      setLoading(false);
-      return;
-    }
-
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({ role: "coach" })
-      .eq("id", user.id);
-
-    if (updateError) {
-      setError(updateError.message);
-      setLoading(false);
-      return;
-    }
-
-    const { error: insertError } = await supabase.from("coaches").insert({
-      user_id: user.id,
-      bio: bio.trim() || null,
-    });
-
-    if (insertError) {
-      if (insertError.code === "23505") {
-        setError("This user is already a coach.");
-      } else {
-        setError(insertError.message);
-      }
+    if (!result.ok) {
+      setError(result.error);
       setLoading(false);
       return;
     }
