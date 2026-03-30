@@ -7,6 +7,7 @@ import type { EvaluationSnapshot } from "@/components/dashboard/player-profile-c
 import { getPlayerPhotoUrl } from "@/lib/player-avatar";
 import { getCurrentUserProfile } from "@/lib/dashboard";
 import { DownloadPlayerReportButton } from "@/components/dashboard/download-player-report-button";
+import { AdminPlayerEdit } from "@/components/dashboard/admin-player-edit";
 
 export default async function PlayerProfilePage({
   params,
@@ -26,7 +27,7 @@ export default async function PlayerProfilePage({
     .from("players")
     .select(
       `
-      id, name, age, gender, school, photo_url, position, status, payment_status, join_date,
+      id, name, age, gender, school, photo_url, position, status, payment_status, join_date, group_id, parent_id, player_user_id,
       player_groups(name)
     `
     )
@@ -35,7 +36,8 @@ export default async function PlayerProfilePage({
 
   if (error || !player) notFound();
 
-  const [{ data: evalRows }, { data: progressLogs }] = await Promise.all([
+  const [{ data: evalRows }, { data: progressLogs }, { data: groups }, parentRow, playerLoginRow] =
+    await Promise.all([
     supabase
       .from("player_evaluations")
       .select(
@@ -56,6 +58,13 @@ export default async function PlayerProfilePage({
       .eq("player_id", id)
       .order("date", { ascending: false })
       .limit(50),
+    supabase.from("player_groups").select("id, name").order("name"),
+    player.parent_id
+      ? supabase.from("users").select("email").eq("id", player.parent_id).maybeSingle()
+      : Promise.resolve({ data: null }),
+    player.player_user_id
+      ? supabase.from("users").select("email").eq("id", player.player_user_id).maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
 
   const initialEvaluations: EvaluationSnapshot[] = (evalRows ?? []).map(
@@ -144,6 +153,19 @@ export default async function PlayerProfilePage({
                 </span>
               </div>
             </div>
+          </div>
+          <div className="mt-6">
+            <AdminPlayerEdit
+              playerId={id}
+              groups={(groups ?? []) as { id: string; name: string }[]}
+              initial={{
+                group_id: (player.group_id as string | null) ?? null,
+                status: player.status as "pending" | "active" | "inactive",
+                payment_status: player.payment_status as "pending" | "paid",
+                parent_email: (parentRow as any)?.data?.email ?? null,
+                player_login_email: (playerLoginRow as any)?.data?.email ?? null,
+              }}
+            />
           </div>
         </div>
 
