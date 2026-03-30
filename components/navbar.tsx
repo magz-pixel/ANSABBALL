@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -15,6 +16,8 @@ const navLinks = [
 ];
 
 export function Navbar() {
+  const pathname = usePathname();
+  const isDashboardRoute = pathname?.startsWith("/dashboard") ?? false;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<{ email?: string } | null>(null);
   const router = useRouter();
@@ -41,7 +44,15 @@ export function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#001F3F] shadow-lg">
+    <nav
+      className={cn(
+        "sticky top-0 z-50 w-full border-b border-white/10 bg-[#001F3F] shadow-lg",
+        /* Dashboard has its own sidebar / mobile drawer. Hide site nav entirely — z-50 here sits above
+           everything inside <main>, so a sticky mobile bar inside the dashboard would render underneath
+           the marketing header and look broken (grey strip, clipped title). */
+        isDashboardRoute && "hidden"
+      )}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}

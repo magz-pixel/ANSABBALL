@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +12,33 @@ type CoachRow = {
   user_id: string;
   photo_url: string | null;
   users: { full_name: string | null; email: string | null } | null;
+  profilePending?: boolean;
 };
+
+async function fetchCoachesTableRows(client: SupabaseClient): Promise<{ id: string; bio: string | null; user_id: string; photo_url: string | null }[]> {
+  const attempt = await client
+    .from("coaches")
+    .select("id, bio, user_id, photo_url, created_at")
+    .order("created_at", { ascending: false });
+
+  if (!attempt.error && attempt.data) {
+    return attempt.data.map(({ id, bio, user_id, photo_url }) => ({
+      id,
+      bio,
+      user_id,
+      photo_url: photo_url ?? null,
+    }));
+  }
+
+  const minimal = await client.from("coaches").select("id, bio, user_id").order("id");
+  if (minimal.error || !minimal.data) {
+    return [];
+  }
+  return minimal.data.map((r) => ({
+    ...r,
+    photo_url: null as string | null,
+  }));
+}
 
 function bucketByUserId<T extends Record<string, unknown>>(
   rows: T[] | null,
@@ -51,27 +78,39 @@ export default async function CoachesPage() {
   }
   const canManage = profile?.role === "admin";
 
-  const { data: coachRows } = await client
-    .from("coaches")
-    .select("id, bio, user_id, photo_url")
-    .order("created_at", { ascending: false });
+  const coachRows = await fetchCoachesTableRows(client);
 
-  const coachUserIds = (coachRows ?? []).map((c) => c.user_id).filter(Boolean) as string[];
+  const { data: coachRoleUsers } = await client.from("users").select("id, full_name, email").eq("role", "coach");
+
+  const tableUserIds = new Set(coachRows.map((c) => c.user_id));
+  const orphanRoleCoaches = (coachRoleUsers ?? []).filter((u) => !tableUserIds.has(u.id));
+
+  const coachUserIds = [
+    ...coachRows.map((c) => c.user_id),
+    ...orphanRoleCoaches.map((u) => u.id),
+  ].filter(Boolean) as string[];
 
   let userMap = new Map<string, { full_name: string | null; email: string | null }>();
   if (coachUserIds.length > 0) {
-    const { data: userRows } = await client
-      .from("users")
-      .select("id, full_name, email")
-      .in("id", coachUserIds);
+    const { data: userRows } = await client.from("users").select("id, full_name, email").in("id", coachUserIds);
     userMap = new Map((userRows ?? []).map((u) => [u.id, u]));
   }
 
-  const coaches: CoachRow[] | null =
-    coachRows?.map((c) => ({
-      ...c,
-      users: userMap.get(c.user_id) ?? null,
-    })) ?? null;
+  const fromTable: CoachRow[] = coachRows.map((c) => ({
+    ...c,
+    users: userMap.get(c.user_id) ?? null,
+  }));
+
+  const fromRoleOnly: CoachRow[] = orphanRoleCoaches.map((u) => ({
+    id: `pending-${u.id}`,
+    bio: null,
+    user_id: u.id,
+    photo_url: null,
+    users: { full_name: u.full_name, email: u.email },
+    profilePending: true,
+  }));
+
+  const coaches: CoachRow[] = [...fromTable, ...fromRoleOnly];
 
   const [{ data: evalRows }, { data: progRows }, { data: attRows }] = await Promise.all([
     coachUserIds.length
@@ -126,15 +165,29 @@ export default async function CoachesPage() {
         {canManage && <AddCoachButton />}
       </div>
 
+      {orphanRoleCoaches.length > 0 && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm text-amber-950">
+          <p className="font-medium">Coach accounts without a staff profile row</p>
+          <p className="mt-1 text-amber-900/90">
+            Some users have role &quot;coach&quot; but no row in the coaches table (e.g. role set in Supabase only).
+            Use <strong>Add Coach</strong> with their email to create the staff profile so assignments and the list stay
+            in sync.
+          </p>
+        </div>
+      )}
+
       <div className="grid gap-4 sm:grid-cols-2">
-        {(coaches as CoachRow[] | null)?.map((c) => {
+        {coaches.map((c) => {
           const uid = c.user_id;
           const evs = evalBuckets.get(uid) ?? [];
           const prs = progBuckets.get(uid) ?? [];
           const ats = attBuckets.get(uid) ?? [];
 
           return (
-            <Card key={c.id}>
+            <Card
+              key={c.id}
+              className={c.profilePending ? "border-amber-200/80 bg-amber-50/30" : undefined}
+            >
               <CardHeader className="flex flex-row items-start gap-4">
                 <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-gray-200">
                   {c.photo_url ? (
@@ -156,7 +209,12 @@ export default async function CoachesPage() {
                   <CardTitle>
                     {c.users?.full_name?.trim() || c.users?.email || `Coach ${c.user_id?.slice(0, 8)}…`}
                   </CardTitle>
-                  <p className="text-sm text-black/70">{(c.users as { email?: string } | null)?.email}</p>
+                  <p className="text-sm text-black/70">{c.users?.email}</p>
+                  {c.profilePending && (
+                    <p className="mt-2 text-xs font-medium text-amber-800">
+                      Staff profile incomplete — use Add Coach with this email to link the profile.
+                    </p>
+                  )}
                 </div>
               </CardHeader>
               {c.bio && <CardContent className="pt-0 text-sm text-black/70">{c.bio}</CardContent>}
@@ -167,21 +225,21 @@ export default async function CoachesPage() {
                     <li className="text-black/60">No evaluations, progress logs, or attendance yet.</li>
                   )}
                   {evs.map((row, i) => (
-                    <li key={`e-${i}`}>
+                    <li key={`e-${c.id}-${i}`}>
                       <span className="font-medium text-[#0066CC]">Evaluation</span> —{" "}
                       {playerName(row as { players?: unknown })} on{" "}
                       {String((row as { evaluated_at?: string }).evaluated_at ?? "—")}
                     </li>
                   ))}
                   {prs.map((row, i) => (
-                    <li key={`p-${i}`}>
+                    <li key={`p-${c.id}-${i}`}>
                       <span className="font-medium text-[#0066CC]">Progress</span> —{" "}
                       {(row as { skill?: string }).skill} for {playerName(row as { players?: unknown })} (
                       {String((row as { date?: string }).date ?? "—")})
                     </li>
                   ))}
                   {ats.map((row, i) => (
-                    <li key={`a-${i}`}>
+                    <li key={`a-${c.id}-${i}`}>
                       <span className="font-medium text-[#0066CC]">Attendance</span> —{" "}
                       {playerName(row as { players?: unknown })} on{" "}
                       {String((row as { session_date?: string }).session_date ?? "—")}
@@ -193,7 +251,7 @@ export default async function CoachesPage() {
           );
         })}
       </div>
-      {(!coaches || coaches.length === 0) && (
+      {coaches.length === 0 && (
         <Card>
           <CardContent className="py-12 text-center text-black/60">
             No coaches yet. Add a coach using the button above (they must sign up first).

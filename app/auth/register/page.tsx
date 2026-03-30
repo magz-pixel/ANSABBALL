@@ -31,12 +31,21 @@ export default function RegisterPage() {
         data: {
           full_name: fullName,
           role,
+          /* Duplicate for DB trigger: some stacks only expose nested user_metadata; signup_role avoids reserved-name edge cases */
+          signup_role: role,
         },
       },
     });
 
     if (error) {
-      setError(error.message);
+      const msg = error.message ?? "";
+      if (msg.includes("Database error saving new user")) {
+        setError(
+          "We could not create your profile in the database. If this keeps happening, the signup trigger may need to be updated (run the latest Supabase migration) or contact support."
+        );
+      } else {
+        setError(msg);
+      }
       setLoading(false);
       return;
     }
