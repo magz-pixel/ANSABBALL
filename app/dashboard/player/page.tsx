@@ -28,7 +28,16 @@ export default async function PlayerProfilePage() {
         <h1 className="text-3xl font-bold text-[#001F3F]">My Profile</h1>
         <Card>
           <CardContent className="py-12 text-center text-black/60">
-            No player profile linked. Contact the ANSA Admin.
+            <p>No player profile linked to your account.</p>
+            <p className="mt-2 text-sm text-black/60">
+              If your parent already added you under “My Children”, you can link that profile.
+            </p>
+            <Link
+              href="/dashboard/player/claim"
+              className="mt-5 inline-flex items-center justify-center rounded-lg bg-[#0066CC] px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+            >
+              Link my profile
+            </Link>
           </CardContent>
         </Card>
       </div>
