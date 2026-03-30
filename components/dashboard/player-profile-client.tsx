@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Radar,
   RadarChart,
@@ -20,6 +20,7 @@ import {
   getCategoryLabel,
   RATING_SCALE_LABELS,
 } from "@/lib/evaluation-rubric";
+import { createClient } from "@/lib/supabase/client";
 
 export interface EvaluationSnapshot {
   id: string;
@@ -45,6 +46,7 @@ export function PlayerProfileClient({
   canEdit = false,
   showPdfCard = true,
   showConsentPdfCard = true,
+  enableLiveUpdates = true,
 }: {
   playerId: string;
   playerName: string;
@@ -55,13 +57,77 @@ export function PlayerProfileClient({
   showPdfCard?: boolean;
   /** Signed participation consent PDF (staff & linked parent) */
   showConsentPdfCard?: boolean;
+  /** Poll for new evaluations so parents/players see updates without refresh */
+  enableLiveUpdates?: boolean;
 }) {
+  const [evaluations, setEvaluations] = useState<EvaluationSnapshot[]>(() => initialEvaluations);
+
+  useEffect(() => {
+    setEvaluations(initialEvaluations);
+  }, [initialEvaluations]);
+
+  useEffect(() => {
+    if (!enableLiveUpdates) return;
+    // Admins already refresh after submit; parents/players benefit from polling.
+    if (canEdit) return;
+
+    const supabase = createClient();
+    let cancelled = false;
+
+    async function poll() {
+      const { data: rows, error } = await supabase
+        .from("player_evaluations")
+        .select(
+          `
+          id,
+          evaluated_at,
+          experience_summary,
+          comments_recommendations,
+          player_evaluation_scores (metric_key, value)
+        `
+        )
+        .eq("player_id", playerId)
+        .order("evaluated_at", { ascending: true })
+        .limit(40);
+
+      if (cancelled || error) return;
+
+      const next: EvaluationSnapshot[] = (rows ?? []).map((row: any) => {
+        const raw = row.player_evaluation_scores as { metric_key: string; value: number }[] | null;
+        const scores = Object.fromEntries((raw ?? []).map((s) => [s.metric_key, Number(s.value)]));
+        return {
+          id: row.id,
+          evaluated_at: row.evaluated_at,
+          experience_summary: row.experience_summary ?? null,
+          comments_recommendations: row.comments_recommendations ?? null,
+          scores,
+        };
+      });
+
+      // Only update if something actually changed (avoid re-render loop)
+      const prevKey = evaluations.map((e) => `${e.id}:${e.evaluated_at}`).join("|");
+      const nextKey = next.map((e) => `${e.id}:${e.evaluated_at}`).join("|");
+      if (prevKey !== nextKey) {
+        setEvaluations(next);
+      }
+    }
+
+    // Initial fetch + interval
+    poll();
+    const id = window.setInterval(poll, 8000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playerId, canEdit, enableLiveUpdates]);
+
   const latestEvaluation = useMemo(() => {
-    if (!initialEvaluations.length) return null;
-    return [...initialEvaluations].sort((a, b) =>
+    if (!evaluations.length) return null;
+    return [...evaluations].sort((a, b) =>
       b.evaluated_at.localeCompare(a.evaluated_at)
     )[0];
-  }, [initialEvaluations]);
+  }, [evaluations]);
 
   const radarData = useMemo(() => {
     if (!latestEvaluation) {
@@ -80,7 +146,7 @@ export function PlayerProfileClient({
   }, [latestEvaluation]);
 
   const lineData = useMemo(() => {
-    return initialEvaluations.map((ev) => {
+    return evaluations.map((ev) => {
       const avgs = categoryAveragesFromScores(ev.scores);
       const row: Record<string, string | number> = { date: ev.evaluated_at };
       RADAR_CATEGORY_ORDER.forEach((id) => {
@@ -88,7 +154,7 @@ export function PlayerProfileClient({
       });
       return row;
     });
-  }, [initialEvaluations]);
+  }, [evaluations]);
 
   return (
     <div className="space-y-6">
@@ -156,13 +222,13 @@ export function PlayerProfileClient({
         </CardContent>
       </Card>
 
-      {initialEvaluations.length > 0 && (
+      {evaluations.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Recent evaluation notes</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {[...initialEvaluations]
+            {[...evaluations]
               .sort((a, b) => b.evaluated_at.localeCompare(a.evaluated_at))
               .slice(0, 5)
               .map((ev) => (

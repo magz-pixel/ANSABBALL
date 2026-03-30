@@ -6,8 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SkillRadarChart } from "@/components/dashboard/skill-radar-chart";
 import { getPlayerPhotoUrl } from "@/lib/player-avatar";
 import { DownloadConsentPdfButton } from "@/components/dashboard/download-consent-pdf-button";
+import { categoryAveragesFromScores, getCategoryLabel } from "@/lib/evaluation-rubric";
 
-const SKILLS = ["dribbling", "shooting", "defense", "free_throws", "vertical", "passing"];
+const RADAR_KEYS = ["shooting", "dribbling", "passing", "defense", "athletic", "game_play"] as const;
 
 export default async function PlayerProfilePage() {
   const supabase = await createClient();
@@ -44,16 +45,32 @@ export default async function PlayerProfilePage() {
     );
   }
 
-  const { data: progress } = await supabase
-    .from("progress_logs")
-    .select("skill, value, date")
+  const { data: evalRows } = await supabase
+    .from("player_evaluations")
+    .select(
+      `
+      id,
+      evaluated_at,
+      player_evaluation_scores (metric_key, value)
+    `
+    )
     .eq("player_id", player.id)
-    .order("date", { ascending: false });
+    .order("evaluated_at", { ascending: false })
+    .limit(1);
 
-  const latestBySkill = SKILLS.map((skill) => {
-    const log = progress?.find((p) => p.skill === skill);
-    return { skill, value: log?.value ?? 0, fullMark: 10 };
-  });
+  const latestEval = evalRows?.[0] ?? null;
+  const rawScores =
+    (latestEval?.player_evaluation_scores as
+      | { metric_key: string; value: number }[]
+      | null) ?? [];
+  const scoreMap = Object.fromEntries(rawScores.map((s) => [s.metric_key, Number(s.value)]));
+  const catAvgs = latestEval ? categoryAveragesFromScores(scoreMap) : {};
+  // Convert 1–5 rubric to 0–10 so it matches SkillRadarChart.
+  const radarData = RADAR_KEYS.map((id) => ({
+    skill: getCategoryLabel(id),
+    value: Math.round(((catAvgs as any)[id] ?? 0) * 2 * 10) / 10,
+    fullMark: 10,
+  }));
 
   return (
     <div className="space-y-8">
@@ -77,10 +94,16 @@ export default async function PlayerProfilePage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>My Skills</CardTitle>
+          <CardTitle>My Skills (latest evaluation)</CardTitle>
         </CardHeader>
         <CardContent>
-          <SkillRadarChart data={latestBySkill} />
+          {!latestEval ? (
+            <p className="text-sm text-black/60">
+              No evaluation yet. This chart will update after a coach submits an evaluation.
+            </p>
+          ) : (
+            <SkillRadarChart data={radarData} />
+          )}
         </CardContent>
       </Card>
 
