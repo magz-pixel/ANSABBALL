@@ -1,7 +1,18 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { siteName } from "@/lib/seo-config";
+
+export const metadata: Metadata = {
+  title: "About Us — Mission & Coaching Philosophy",
+  description: `Learn about ${siteName}: youth basketball development in Nairobi, Kenya. Coaching values, founder story, and why families choose our academy for kids basketball training.`,
+  alternates: { canonical: "/about" },
+  openGraph: {
+    title: `About ${siteName} | Nairobi Basketball Academy`,
+  },
+};
 
 const PHILOSOPHY_POINTS = [
   {

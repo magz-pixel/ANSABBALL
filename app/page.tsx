@@ -1,9 +1,22 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { GalleryCarousel } from "@/components/gallery-carousel";
 import { AnimatedCounter } from "@/components/animated-counter";
+import { defaultDescription, siteUrl } from "@/lib/seo-config";
+
+export const metadata: Metadata = {
+  title: "Youth Basketball Training Nairobi & Kenya",
+  description: defaultDescription,
+  alternates: { canonical: "/" },
+  openGraph: {
+    url: siteUrl,
+    title: "ANSA Basketball Academy — Kids & Youth Basketball in Nairobi",
+    description: defaultDescription,
+  },
+};
 
 const STATS = [
   { value: 50, suffix: "+", label: "Players" },
@@ -94,6 +107,11 @@ export default function HomePage() {
           <p className="mt-6 text-lg leading-relaxed text-black/80">
             Developing basketball skills, character, and opportunities for
             youth in need across Nairobi.
+          </p>
+          <p className="mt-4 text-base leading-relaxed text-black/75">
+            Professional basketball training for kids and beginners, with coaching
+            focused on fundamentals and growth — a youth basketball academy serving
+            Nairobi and families searching for structured training in Kenya.
           </p>
           <Link
             href="/about"

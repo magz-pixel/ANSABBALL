@@ -1,6 +1,17 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import { ScholarshipForm } from "@/components/scholarship-form";
 import { cn } from "@/lib/utils";
+import { siteName } from "@/lib/seo-config";
+
+export const metadata: Metadata = {
+  title: "Scholarships — Youth Basketball Support in Kenya",
+  description: `Apply for a basketball scholarship with ${siteName}. Financial need–based support for talented youth in Nairobi. Kids ages 5–17 — invest in basketball and education.`,
+  alternates: { canonical: "/scholarships" },
+  openGraph: {
+    title: `Basketball Scholarships | ${siteName} Nairobi`,
+  },
+};
 
 const ELIGIBILITY = [
   "Ages 5–17",

@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getRoleAwareServerClient } from "@/lib/supabase/role-data-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddAnnouncementButton } from "@/components/dashboard/add-announcement-button";
+import { DeleteAnnouncementButton } from "@/components/dashboard/delete-announcement-button";
 
 export default async function AnnouncementsPage() {
   const supabase = await createClient();
@@ -15,6 +16,7 @@ export default async function AnnouncementsPage() {
   const role = profile?.role ?? "player";
   const client = getRoleAwareServerClient(role, supabase, admin);
   const canManage = profile?.role === "admin" || profile?.role === "coach";
+  const isAdmin = profile?.role === "admin";
   const { data: announcements } = await client
     .from("announcements")
     .select("id, title, content, date")
@@ -33,9 +35,14 @@ export default async function AnnouncementsPage() {
       <div className="space-y-4">
         {announcements?.map((a) => (
           <Card key={a.id}>
-            <CardHeader>
-              <CardTitle>{a.title}</CardTitle>
-              <p className="text-sm text-black/60">{a.date}</p>
+            <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <CardTitle>{a.title}</CardTitle>
+                <p className="text-sm text-black/60">{a.date}</p>
+              </div>
+              {isAdmin && (
+                <DeleteAnnouncementButton announcementId={a.id} title={a.title} />
+              )}
             </CardHeader>
             <CardContent>
               <p className="whitespace-pre-wrap text-black/85">{a.content}</p>
