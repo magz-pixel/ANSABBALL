@@ -42,11 +42,12 @@ export default function HomePage() {
           className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/35"
           aria-hidden
         />
-        <div className="relative z-10 flex min-h-[85vh] w-full flex-col justify-end px-6 pb-8 pt-16 text-white sm:px-10 md:pb-12">
+        <div className="relative z-10 min-h-[85vh] w-full text-white">
           <h1 className="sr-only">
             ANSA Basketball Academy — youth basketball training in Nairobi, Kenya
           </h1>
-          <div className="mx-auto flex w-full max-w-6xl flex-row items-center justify-between gap-4">
+          {/* Pin CTAs to hero corners (full width); avoids a centered max-width group */}
+          <div className="absolute bottom-8 left-0 right-0 flex flex-row items-center justify-between gap-4 px-6 sm:bottom-10 sm:px-10 md:bottom-12">
             <Link
               href="/merchandise"
               className={cn(
