@@ -29,12 +29,12 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative min-h-[85vh] w-full overflow-hidden bg-[#001F3F]">
+      <section className="relative min-h-[85vh] w-full overflow-hidden">
         <Image
           src="/hero.png"
-          alt="Two young ANSA Basketball Academy players in white and blue uniforms holding basketballs, Active Nation Basketball Academy banner — Nairobi, Kenya"
+          alt="ANSA players in white and blue uniforms with basketballs; Active Nation Basketball Academy — Nairobi, Kenya"
           fill
-          className="object-contain object-center md:object-cover"
+          className="object-cover object-center"
           priority
           quality={92}
           sizes="100vw"

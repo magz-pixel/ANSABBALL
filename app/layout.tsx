@@ -52,7 +52,7 @@ export const metadata: Metadata = {
       {
         url: "/hero.png",
         width: 1024,
-        height: 576,
+        height: 545,
         alt: "ANSA Basketball Academy — youth basketball training in Nairobi, Kenya",
       },
     ],
