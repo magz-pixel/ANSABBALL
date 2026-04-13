@@ -39,20 +39,14 @@ export default function HomePage() {
           sizes="100vw"
         />
         <div
-          className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/50"
+          className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/35"
           aria-hidden
         />
         <div className="relative z-10 flex min-h-[85vh] flex-col items-center justify-center px-6 py-16 text-center text-white sm:px-10">
-          <h1 className="max-w-5xl text-4xl font-bold leading-tight tracking-tight drop-shadow-[0_2px_20px_rgba(0,0,0,0.8)] sm:text-5xl md:text-6xl lg:text-7xl">
-            ANSA Basketball Academy
+          <h1 className="sr-only">
+            ANSA Basketball Academy — youth basketball training in Nairobi, Kenya
           </h1>
-          <p className="mt-4 max-w-2xl text-xl font-medium tracking-wide drop-shadow-[0_1px_8px_rgba(0,0,0,0.7)] sm:text-2xl">
-            Building Nairobi&apos;s Future Stars
-          </p>
-          <p className="mt-6 max-w-xl text-base text-white/95 drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)] sm:text-lg">
-            Elite youth training, scholarships & progress tracking
-          </p>
-          <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:gap-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
             <Link
               href="/auth/register"
               className={cn(
@@ -63,13 +57,13 @@ export default function HomePage() {
               Join Now →
             </Link>
             <Link
-              href="/scholarships"
+              href="/merchandise"
               className={cn(
                 buttonVariants({ variant: "outline", size: "lg" }),
                 "border-2 border-white px-8 font-semibold text-white backdrop-blur-sm transition-all hover:scale-105 hover:bg-white/20"
               )}
             >
-              Apply for Scholarship
+              Shop now
             </Link>
           </div>
         </div>
