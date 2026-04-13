@@ -32,7 +32,7 @@ export default function HomePage() {
       <section className="relative min-h-[85vh] w-full overflow-hidden">
         <Image
           src="/hero.png"
-          alt="ANSA Basketball Academy team celebrating together – Nairobi, Kenya"
+          alt="Two young ANSA Basketball Academy players in white and blue uniforms holding basketballs, Active Nation Basketball Academy banner — Nairobi, Kenya"
           fill
           className="object-cover object-center"
           priority
