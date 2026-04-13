@@ -42,28 +42,28 @@ export default function HomePage() {
           className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/35"
           aria-hidden
         />
-        <div className="relative z-10 flex min-h-[85vh] flex-col items-center justify-center px-6 py-16 text-center text-white sm:px-10">
+        <div className="relative z-10 flex min-h-[85vh] w-full flex-col justify-end px-6 pb-8 pt-16 text-white sm:px-10 md:pb-12">
           <h1 className="sr-only">
             ANSA Basketball Academy — youth basketball training in Nairobi, Kenya
           </h1>
-          <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
-            <Link
-              href="/auth/register"
-              className={cn(
-                buttonVariants({ size: "lg" }),
-                "bg-[#0066CC] px-8 font-semibold text-white shadow-lg transition-all hover:scale-105 hover:bg-blue-700 hover:shadow-xl"
-              )}
-            >
-              Join Now →
-            </Link>
+          <div className="mx-auto flex w-full max-w-6xl flex-row items-center justify-between gap-4">
             <Link
               href="/merchandise"
               className={cn(
                 buttonVariants({ variant: "outline", size: "lg" }),
-                "border-2 border-white px-8 font-semibold text-white backdrop-blur-sm transition-all hover:scale-105 hover:bg-white/20"
+                "shrink-0 border-2 border-white px-6 font-semibold text-white backdrop-blur-sm transition-all hover:scale-105 hover:bg-white/20 sm:px-8"
               )}
             >
               Shop now
+            </Link>
+            <Link
+              href="/auth/register"
+              className={cn(
+                buttonVariants({ size: "lg" }),
+                "shrink-0 bg-[#0066CC] px-6 font-semibold text-white shadow-lg transition-all hover:scale-105 hover:bg-blue-700 hover:shadow-xl sm:px-8"
+              )}
+            >
+              Join Now →
             </Link>
           </div>
         </div>
