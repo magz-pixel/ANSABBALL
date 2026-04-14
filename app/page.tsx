@@ -31,10 +31,19 @@ export default function HomePage() {
       {/* Hero */}
       <section className="relative min-h-[85vh] w-full overflow-hidden">
         <Image
+          src="/hero-mobile.png"
+          alt="ANSA players in white and blue uniforms with basketballs; Active Nation Basketball Academy — Nairobi, Kenya (mobile hero)"
+          fill
+          className="object-cover object-center md:hidden"
+          priority
+          quality={92}
+          sizes="100vw"
+        />
+        <Image
           src="/hero.png"
           alt="ANSA players in white and blue uniforms with basketballs; Active Nation Basketball Academy — Nairobi, Kenya"
           fill
-          className="object-cover object-center"
+          className="hidden object-cover object-center md:block"
           priority
           quality={92}
           sizes="100vw"
