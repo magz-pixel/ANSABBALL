@@ -5,6 +5,7 @@ import { getCoachAssignedGroupIds } from "@/lib/coach-scope";
 import Image from "next/image";
 import Link from "next/link";
 import { AddPlayerButton } from "@/components/dashboard/add-player-button";
+import { RemovePlayerButton } from "@/components/dashboard/remove-player-button";
 import { getPlayerPhotoUrl } from "@/lib/player-avatar";
 
 export default async function PlayersPage() {
@@ -28,7 +29,7 @@ export default async function PlayersPage() {
     .from("players")
     .select(
       `
-      id, name, age, gender, school, status, payment_status, join_date, photo_url,
+      id, name, age, gender, school, status, payment_status, join_date, photo_url, group_id,
       player_groups(name)
     `
     )
@@ -139,12 +140,15 @@ export default async function PlayersPage() {
                   </td>
                   {canManage && (
                     <td className="px-6 py-4 text-right">
-                      <Link
-                        href={`/dashboard/players/${p.id}`}
-                        className="text-sm font-medium text-[#0066CC] hover:underline"
-                      >
-                        View
-                      </Link>
+                      <div className="flex items-center justify-end gap-3">
+                        <Link
+                          href={`/dashboard/players/${p.id}`}
+                          className="text-sm font-medium text-[#0066CC] hover:underline"
+                        >
+                          View
+                        </Link>
+                        <RemovePlayerButton playerId={p.id} playerName={p.name} />
+                      </div>
                     </td>
                   )}
                 </tr>
