@@ -58,7 +58,7 @@ export default async function ProfilePage() {
             Forgot your password?{" "}
             <Link
               href="/auth/forgot-password"
-              className="font-medium text-[#0066CC] hover:underline"
+              className="font-medium text-[#f97316] hover:underline"
             >
               Send a reset link to your email
             </Link>{" "}

@@ -27,7 +27,7 @@ export default async function ChildrenPage() {
           <p className="mt-1 text-black/70">View your children&apos;s profiles</p>
         </div>
         <Link href="/dashboard/children/add">
-          <Button className="bg-[#0066CC] text-white hover:bg-blue-700">
+          <Button className="bg-[#f97316] text-white hover:bg-orange-600">
             Add another child
           </Button>
         </Link>
@@ -36,9 +36,9 @@ export default async function ChildrenPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {children?.map((c) => (
           <Link key={c.id} href={`/dashboard/children/${c.id}`}>
-            <Card className="transition-all hover:shadow-xl hover:border-[#0066CC]/30">
+            <Card className="transition-all hover:shadow-xl hover:border-[#f97316]/30">
               <CardContent className="flex items-center gap-4 p-6">
-                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-gray-200 ring-2 ring-[#0066CC]/20">
+                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-gray-200 ring-2 ring-[#f97316]/20">
                   <Image
                     src={getPlayerPhotoUrl(c.photo_url, c.id)}
                     alt={c.name}

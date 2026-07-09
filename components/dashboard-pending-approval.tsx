@@ -27,11 +27,11 @@ export function DashboardPendingApproval({ email, fullName }: DashboardPendingAp
           </ul>
           <p className="text-black/80">
             Questions? Contact the ANSA Admin at{" "}
-            <a href="tel:0718082452" className="font-medium text-[#0066CC] hover:underline">
+            <a href="tel:0718082452" className="font-medium text-[#f97316] hover:underline">
               0718082452
             </a>{" "}
             or{" "}
-            <a href="tel:0740406721" className="font-medium text-[#0066CC] hover:underline">
+            <a href="tel:0740406721" className="font-medium text-[#f97316] hover:underline">
               0740406721
             </a>
             .

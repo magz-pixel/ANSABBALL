@@ -10,8 +10,8 @@ export function OrganizationJsonLd() {
     description:
       "Youth and kids basketball training in Nairobi, Kenya — coaching, skill development, and competitive opportunities.",
     url: siteUrl,
-    logo: `${siteUrl}/hero.png`,
-    image: `${siteUrl}/hero.png`,
+    logo: `${siteUrl}/brand/ansa-logo.png`,
+    image: `${siteUrl}/hero-ansa.png`,
     telephone: "+254718082452",
     address: {
       "@type": "PostalAddress",

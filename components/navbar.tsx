@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { tryCreateClient } from "@/lib/supabase/client";
 import { usePathname, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { AnsaLogo } from "@/components/brand/ansa-logo";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -21,10 +21,11 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<{ email?: string } | null>(null);
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = tryCreateClient();
 
-  // Check auth state on mount
   useEffect(() => {
+    if (!supabase) return;
+
     supabase.auth.getUser().then(({ data: { user } }) => setUser(user ?? null));
 
     const {
@@ -34,109 +35,116 @@ export function Navbar() {
     });
 
     return () => subscription.unsubscribe();
-  }, [supabase.auth]);
+  }, [supabase]);
 
   const handleSignOut = async () => {
+    if (!supabase) return;
     await supabase.auth.signOut();
     setUser(null);
     router.push("/");
     router.refresh();
   };
 
-  return (
-    <nav
-      className={cn(
-        "sticky top-0 z-50 w-full border-b border-white/10 bg-[#001F3F] shadow-lg",
-        /* Dashboard has its own sidebar / mobile drawer. Hide site nav entirely — z-50 here sits above
-           everything inside <main>, so a sticky mobile bar inside the dashboard would render underneath
-           the marketing header and look broken (grey strip, clipped title). */
-        isDashboardRoute && "hidden"
-      )}
-    >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-xl font-bold text-white"
-          >
-            <span className="rounded bg-[#0066CC] px-2 py-0.5 text-white">
-              ANSA
-            </span>
-            <span className="hidden sm:inline text-white/95">Basketball Academy</span>
-          </Link>
+  if (isDashboardRoute) return null;
 
-          {/* Desktop nav */}
-          <div className="hidden md:flex md:items-center md:gap-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-white/90 transition-colors hover:text-white"
-              >
-                {link.label}
-              </Link>
-            ))}
-            {user ? (
-              <div className="flex items-center gap-4">
-                <Link href="/dashboard">
-                  <Button variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10">
-                    Dashboard
-                  </Button>
+  return (
+    <header className="sticky top-0 z-50 px-3 pt-2 sm:px-4 sm:pt-3">
+      <nav className="mx-auto max-w-7xl rounded-2xl border border-gray-200/80 bg-white/95 shadow-lg shadow-black/5 backdrop-blur-md">
+        <div className="flex h-[4.5rem] items-center justify-between gap-4 px-4 sm:px-6 md:h-20">
+          <AnsaLogo href="/" priority className="shrink-0" />
+
+          <div className="hidden items-center gap-1 lg:flex lg:gap-2">
+            {navLinks.map((link) => {
+              const isActive =
+                link.href === "/"
+                  ? pathname === "/"
+                  : pathname?.startsWith(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "relative px-3 py-2 text-sm font-semibold transition-colors",
+                    isActive
+                      ? "text-ansa-primary"
+                      : "text-gray-600 hover:text-ansa-primary"
+                  )}
+                >
+                  {link.label}
+                  {isActive ? (
+                    <span className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-ansa-accent" />
+                  ) : null}
                 </Link>
-                <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-white/90 hover:text-white hover:bg-white/10">
-                  Sign out
-                </Button>
-              </div>
-            ) : (
-              <Link href="/auth/login">
-                <Button size="sm" className="bg-[#0066CC] text-white hover:bg-blue-700">Login</Button>
+              );
+            })}
+            {user ? (
+              <Link
+                href="/dashboard"
+                className="ml-2 inline-flex items-center gap-1.5 px-3 py-2 text-sm font-semibold text-gray-600 hover:text-ansa-primary"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+                Dashboard
               </Link>
-            )}
+            ) : null}
           </div>
 
-          {/* Mobile menu button */}
+          <div className="hidden items-center gap-2 lg:flex">
+            {user ? (
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="rounded-xl px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
+              >
+                Sign out
+              </button>
+            ) : (
+              <Link
+                href="/auth/login"
+                className="rounded-xl px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
+              >
+                Login
+              </Link>
+            )}
+            <Link
+              href="/auth/register"
+              className="rounded-xl bg-ansa-primary px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-ansa-primary/90"
+            >
+              Join Now
+            </Link>
+          </div>
+
           <button
             type="button"
-            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-white hover:bg-white/10 touch-manipulation md:hidden"
+            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-ansa-primary hover:bg-gray-100 lg:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-expanded={mobileMenuOpen}
           >
             <span className="sr-only">Open menu</span>
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               {mobileMenuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               )}
             </svg>
           </button>
         </div>
 
-        {/* Mobile menu */}
-        {mobileMenuOpen && (
-          <div className="border-t border-white/10 py-2 md:hidden">
+        {mobileMenuOpen ? (
+          <div className="border-t border-gray-100 px-4 py-3 lg:hidden">
             <div className="flex flex-col gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="min-h-[48px] px-2 py-3 text-base font-medium text-white/90 hover:text-white touch-manipulation"
+                  className="min-h-[48px] rounded-xl px-3 py-3 text-base font-semibold text-ansa-primary hover:bg-gray-50"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.label}
@@ -146,38 +154,42 @@ export function Navbar() {
                 <>
                   <Link
                     href="/dashboard"
+                    className="min-h-[48px] rounded-xl px-3 py-3 text-base font-semibold text-ansa-primary hover:bg-gray-50"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <Button variant="outline" size="sm" className="w-full border-white/20 text-white hover:bg-white/10">
-                      Dashboard
-                    </Button>
+                    Dashboard
                   </Link>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full text-white/90 hover:text-white hover:bg-white/10"
+                  <button
+                    type="button"
+                    className="min-h-[48px] rounded-xl px-3 py-3 text-left text-base font-semibold text-gray-600 hover:bg-gray-50"
                     onClick={() => {
                       handleSignOut();
                       setMobileMenuOpen(false);
                     }}
                   >
                     Sign out
-                  </Button>
+                  </button>
                 </>
               ) : (
                 <Link
                   href="/auth/login"
+                  className="min-h-[48px] rounded-xl px-3 py-3 text-base font-semibold text-gray-600 hover:bg-gray-50"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <Button size="sm" className="w-full bg-[#0066CC] text-white hover:bg-blue-700">
-                    Login
-                  </Button>
+                  Login
                 </Link>
               )}
+              <Link
+                href="/auth/register"
+                className="mt-2 flex min-h-[48px] items-center justify-center rounded-xl bg-ansa-primary text-base font-bold text-white"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Join Now
+              </Link>
             </div>
           </div>
-        )}
-      </div>
-    </nav>
+        ) : null}
+      </nav>
+    </header>
   );
 }

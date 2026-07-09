@@ -4,8 +4,10 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { EventPoster } from "@/components/programs/event-poster";
-import { UPCOMING_EVENTS } from "@/lib/upcoming-events";
+import { PageBanner } from "@/components/marketing/page-banner";
 import { siteName } from "@/lib/seo-config";
+import { createClient } from "@/lib/supabase/server";
+import { getPublishedMarketingEvents } from "@/lib/marketing-events";
 
 export const metadata: Metadata = {
   title: "Programs & Upcoming Basketball Events",
@@ -56,23 +58,13 @@ const PROGRAMS = [
   },
 ];
 
-export default function ProgramsPage() {
+export default async function ProgramsPage() {
+  const supabase = await createClient();
+  const upcomingEvents = await getPublishedMarketingEvents(supabase);
+
   return (
     <div>
-      {/* Banner */}
-      <section className="relative flex min-h-[45vh] items-center justify-center overflow-hidden bg-[#001F3F] px-4">
-        <Image
-          src="/gallery/gallery-7.png"
-          alt="ANSA Basketball Academy"
-          fill
-          className="object-cover opacity-30"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-[#001F3F]/80" />
-        <h1 className="relative z-10 text-4xl font-bold text-white md:text-5xl">
-          Our Programs
-        </h1>
-      </section>
+      <PageBanner title="Our Programs" subtitle="Structured training for every age and skill level in Nairobi" />
 
       {/* Program cards */}
       <section className="bg-white py-20">
@@ -98,7 +90,7 @@ export default function ProgramsPage() {
                 </div>
                 <div className="p-6">
                   <p className="text-sm font-medium text-black/80">{p.schedule}</p>
-                  <p className="mt-1 text-sm text-[#0066CC]">{p.venue}</p>
+                  <p className="mt-1 text-sm text-[#f97316]">{p.venue}</p>
                   <p className="mt-4 text-black/75">{p.desc}</p>
                   <p className="mt-4 text-sm font-semibold text-black/90">{p.pricing}</p>
                   <p className="mt-1 text-xs text-black/60">Requirement: {p.requirement}</p>
@@ -118,7 +110,7 @@ export default function ProgramsPage() {
             </p>
 
             <div className="mt-12 space-y-16">
-              {UPCOMING_EVENTS.map((ev) => (
+              {upcomingEvents.map((ev) => (
                 <article
                   key={ev.id}
                   className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:items-start"
@@ -163,7 +155,7 @@ export default function ProgramsPage() {
                         href="/auth/register"
                         className={cn(
                           buttonVariants({ size: "lg" }),
-                          "bg-[#0066CC] font-semibold text-white shadow-md hover:bg-blue-700"
+                          "bg-[#f97316] font-semibold text-white shadow-md hover:bg-orange-600"
                         )}
                       >
                         Register for this intake
@@ -185,7 +177,7 @@ export default function ProgramsPage() {
               href="/auth/register"
               className={cn(
                 buttonVariants({ size: "lg" }),
-                "bg-[#0066CC] px-10 font-semibold text-white shadow-lg transition-all hover:scale-105 hover:bg-blue-700 hover:shadow-xl"
+                "bg-[#f97316] px-10 font-semibold text-white shadow-lg transition-all hover:scale-105 hover:bg-orange-600 hover:shadow-xl"
               )}
             >
               Sign Up Now

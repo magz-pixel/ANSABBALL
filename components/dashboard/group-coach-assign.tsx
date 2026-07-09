@@ -73,7 +73,7 @@ export function GroupCoachAssign({
                   >
                     <input
                       type="checkbox"
-                      className="h-4 w-4 rounded border-gray-300 text-[#0066CC] focus:ring-[#0066CC]"
+                      className="h-4 w-4 rounded border-gray-300 text-[#f97316] focus:ring-[#f97316]"
                       checked={checked}
                       disabled={busy}
                       onChange={(e) => toggle(g.id, c.id, e.target.checked)}

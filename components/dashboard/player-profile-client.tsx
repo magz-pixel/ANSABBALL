@@ -198,8 +198,8 @@ export function PlayerProfileClient({
                   <Radar
                     name={playerName}
                     dataKey="value"
-                    stroke="#0066CC"
-                    fill="#0066CC"
+                    stroke="#f97316"
+                    fill="#f97316"
                     fillOpacity={0.35}
                   />
                 </RadarChart>
@@ -236,7 +236,7 @@ export function PlayerProfileClient({
                   key={ev.id}
                   className="border-b border-gray-100 pb-3 last:border-0"
                 >
-                  <p className="text-xs font-medium text-[#0066CC]">
+                  <p className="text-xs font-medium text-[#f97316]">
                     {ev.evaluated_at}
                   </p>
                   {ev.comments_recommendations ? (

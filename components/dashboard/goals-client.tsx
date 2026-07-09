@@ -92,7 +92,7 @@ export function GoalsClient({
                 required
               />
             </div>
-            <Button type="submit" disabled={loading} className="bg-[#0066CC] hover:bg-blue-700">
+            <Button type="submit" disabled={loading} className="bg-[#f97316] hover:bg-orange-600">
               {loading ? "Adding..." : "Add Goal"}
             </Button>
           </form>
@@ -113,7 +113,7 @@ export function GoalsClient({
                   <p className="font-medium">{g.title}</p>
                   <div className="mt-2 h-2 overflow-hidden rounded-full bg-gray-200">
                     <div
-                      className="h-full bg-[#0066CC] transition-all"
+                      className="h-full bg-[#f97316] transition-all"
                       style={{
                         width: `${Math.min(100, (g.current / g.target) * 100)}%`,
                       }}

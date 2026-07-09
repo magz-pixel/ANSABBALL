@@ -37,7 +37,7 @@ export function MerchNavBar() {
               >
                 {l.label}
                 {l.href === "/merchandise/cart" && itemCount > 0 ? (
-                  <span className="ml-1.5 rounded-full bg-[#0066CC] px-2 py-0.5 text-xs text-white">
+                  <span className="ml-1.5 rounded-full bg-[#f97316] px-2 py-0.5 text-xs text-white">
                     {itemCount}
                   </span>
                 ) : null}

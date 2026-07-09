@@ -4,6 +4,9 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { formatAuthError } from "@/lib/auth-errors";
+import { isSupabaseConfigured } from "@/lib/supabase/public-config";
+import { AnsaLogo } from "@/components/brand/ansa-logo";
 
 type SignupRole = "parent" | "player" | "coach";
 
@@ -16,69 +19,79 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const router = useRouter();
-  const supabase = createClient();
+  const supabaseConfigured = isSupabaseConfigured();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!supabaseConfigured) {
+      setError("Sign-up is temporarily unavailable. Please contact ANSA support.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setMessage(null);
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName,
-          role,
-          /* Duplicate for DB trigger: some stacks only expose nested user_metadata; signup_role avoids reserved-name edge cases */
-          signup_role: role,
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            role,
+            signup_role: role,
+          },
         },
-      },
-    });
+      });
 
-    if (error) {
-      const msg = error.message ?? "";
-      if (msg.includes("Database error saving new user")) {
-        setError(
-          "We could not create your profile in the database. If this keeps happening, the signup trigger may need to be updated (run the latest Supabase migration) or contact support."
-        );
-      } else {
-        setError(msg);
+      if (error) {
+        setError(formatAuthError(error));
+        setLoading(false);
+        return;
       }
-      setLoading(false);
-      return;
-    }
 
-    // When email confirmation is disabled, Supabase returns a session immediately.
-    if (data.session) {
-      await supabase.rpc("sync_public_user_role_from_auth");
-      setMessage("Account created. Taking you to the dashboard…");
-      router.push("/dashboard");
+      if (data.session) {
+        await supabase.rpc("sync_public_user_role_from_auth");
+        setMessage("Account created. Taking you to the dashboard…");
+        router.push("/dashboard");
+        router.refresh();
+        setLoading(false);
+        return;
+      }
+
+      setMessage(
+        "If your project sends confirmation emails, check your inbox. If not, you can sign in now — your role will sync automatically when you log in."
+      );
       router.refresh();
-      setLoading(false);
-      return;
+    } catch (err) {
+      setError(formatAuthError(err));
     }
-
-    // Email confirmation enabled: no session until they click the link.
-    setMessage(
-      "If your project sends confirmation emails, check your inbox. If not, you can sign in now — your role will sync automatically when you log in."
-    );
-    router.refresh();
     setLoading(false);
   };
 
   const handleGoogleLogin = async () => {
+    if (!supabaseConfigured) {
+      setError("Sign-up is temporarily unavailable. Please contact ANSA support.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/auth/callback` },
+      });
 
-    if (error) {
-      setError(error.message);
+      if (error) {
+        setError(formatAuthError(error));
+      }
+    } catch (err) {
+      setError(formatAuthError(err));
     }
     setLoading(false);
   };
@@ -86,14 +99,21 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
       <div className="w-full max-w-md space-y-8 rounded-lg border border-ansa-accent/20 bg-white p-8 shadow-lg">
-        <div>
-          <h2 className="text-center text-2xl font-bold text-ansa-primary">
+        <div className="flex flex-col items-center">
+          <AnsaLogo href="/" />
+          <h2 className="mt-4 text-center text-2xl font-bold text-ansa-primary">
             Create your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Join ANSA Basketball Academy
           </p>
         </div>
+
+        {!supabaseConfigured && (
+          <div className="rounded-md bg-amber-50 p-3 text-sm text-amber-900">
+            Sign-up is not configured on this deployment. Please contact the site administrator.
+          </div>
+        )}
 
         <form onSubmit={handleRegister} className="space-y-6">
           {error && (
@@ -180,7 +200,7 @@ export default function RegisterPage() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !supabaseConfigured}
             className="w-full rounded-md bg-ansa-primary px-4 py-2 font-medium text-white transition-colors hover:bg-ansa-primary/90 disabled:opacity-50"
           >
             {loading ? "Creating account..." : "Sign up"}
@@ -205,7 +225,7 @@ export default function RegisterPage() {
         <button
           type="button"
           onClick={handleGoogleLogin}
-          disabled={loading}
+          disabled={loading || !supabaseConfigured}
           className="flex w-full items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 font-medium text-ansa-primary transition-colors hover:bg-gray-50 disabled:opacity-50"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24">

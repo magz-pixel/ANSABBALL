@@ -15,7 +15,7 @@ export function CartPageClient() {
       <div className="mx-auto max-w-lg px-4 py-20 text-center">
         <p className="text-lg text-gray-600">Your cart is empty.</p>
         <Link href="/merchandise">
-          <Button className="mt-6 bg-[#0066CC] text-white hover:bg-blue-700">
+          <Button className="mt-6 bg-[#f97316] text-white hover:bg-orange-600">
             Browse shop
           </Button>
         </Link>
@@ -45,7 +45,7 @@ export function CartPageClient() {
                 {line.size ? (
                   <p className="text-sm text-gray-500">Size: {line.size}</p>
                 ) : null}
-                <p className="mt-1 text-[#0066CC] font-semibold">
+                <p className="mt-1 text-[#f97316] font-semibold">
                   {formatKes(product.priceKes)} each
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -95,7 +95,7 @@ export function CartPageClient() {
           <strong>M-Pesa</strong> on the next step.
         </p>
         <Link href="/merchandise/checkout" className="mt-6 block">
-          <Button className="w-full bg-[#0066CC] py-6 text-base font-semibold text-white hover:bg-blue-700">
+          <Button className="w-full bg-[#f97316] py-6 text-base font-semibold text-white hover:bg-orange-600">
             Proceed to checkout
           </Button>
         </Link>

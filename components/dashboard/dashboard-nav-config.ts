@@ -12,6 +12,7 @@ export const DASHBOARD_NAV_LINKS: Record<
     { href: "/dashboard/groups", label: "Groups" },
     { href: "/dashboard/coaches", label: "Coaches" },
     { href: "/dashboard/announcements", label: "Announcements" },
+    { href: "/dashboard/events", label: "Events" },
     { href: "/dashboard/approvals", label: "Approvals" },
     { href: "/dashboard/profile", label: "Profile" },
   ],

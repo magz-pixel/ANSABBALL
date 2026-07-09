@@ -40,7 +40,7 @@ export async function PlayerDashboard() {
             </p>
             <Link
               href="/dashboard/player/claim"
-              className="mt-5 inline-flex items-center justify-center rounded-lg bg-[#0066CC] px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+              className="mt-5 inline-flex items-center justify-center rounded-lg bg-[#f97316] px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600"
             >
               Link my profile
             </Link>
@@ -102,7 +102,7 @@ export async function PlayerDashboard() {
                 {recentProgress.map((p, i) => (
                   <li key={i} className="flex justify-between">
                     <span className="text-black/80">{p.skill}</span>
-                    <span className="font-medium text-[#0066CC]">{p.value}/10</span>
+                    <span className="font-medium text-[#f97316]">{p.value}/10</span>
                   </li>
                 ))}
               </ul>
@@ -125,7 +125,7 @@ export async function PlayerDashboard() {
                     <p className="font-medium">{g.title}</p>
                     <div className="mt-1 h-2 overflow-hidden rounded-full bg-gray-200">
                       <div
-                        className="h-full bg-[#0066CC]"
+                        className="h-full bg-[#f97316]"
                         style={{
                           width: `${Math.min(100, (Number(g.current) / Number(g.target)) * 100)}%`,
                         }}

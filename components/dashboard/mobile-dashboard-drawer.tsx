@@ -97,7 +97,7 @@ export function MobileDashboardDrawer({ role }: { role: DashboardRole }) {
                 className={cn(
                   "block min-h-[48px] rounded-lg px-4 py-3.5 text-base font-medium touch-manipulation active:bg-white/10",
                   isActive
-                    ? "bg-[#0066CC] text-white"
+                    ? "bg-[#f97316] text-white"
                     : "text-white/90 hover:bg-white/10 hover:text-white"
                 )}
               >

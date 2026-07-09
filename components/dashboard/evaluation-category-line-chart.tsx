@@ -13,7 +13,7 @@ import {
 import { RADAR_CATEGORY_ORDER, getCategoryLabel } from "@/lib/evaluation-rubric";
 
 const COLORS = [
-  "#0066CC",
+  "#f97316",
   "#001F3F",
   "#22c55e",
   "#eab308",

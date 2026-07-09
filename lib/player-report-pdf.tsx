@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 4,
   },
-  tagline: { fontSize: 8, color: "#0066CC", marginBottom: 10 },
+  tagline: { fontSize: 8, color: "#f97316", marginBottom: 10 },
   section: {
     marginTop: 8,
     marginBottom: 4,
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#001F3F",
     borderBottomWidth: 1,
-    borderBottomColor: "#0066CC",
+    borderBottomColor: "#f97316",
     paddingBottom: 2,
   },
   row: {
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#f3f4f6",
   },
   skillName: { flex: 2, color: "#374151", fontSize: 8 },
-  skillVal: { flex: 0.6, textAlign: "right", color: "#0066CC", fontWeight: "bold" },
+  skillVal: { flex: 0.6, textAlign: "right", color: "#f97316", fontWeight: "bold" },
   legend: {
     marginTop: 6,
     padding: 6,

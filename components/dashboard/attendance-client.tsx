@@ -121,7 +121,7 @@ export function AttendanceClient({
           <div>
             <Label>Group</Label>
             <select
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0066CC] focus:outline-none focus:ring-2 focus:ring-[#0066CC]/20"
+              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#f97316] focus:outline-none focus:ring-2 focus:ring-[#f97316]/20"
               value={selectedGroupId}
               onChange={(e) => setSelectedGroupId(e.target.value)}
             >
@@ -159,7 +159,7 @@ export function AttendanceClient({
                           )
                         )
                       }
-                      className="h-4 w-4 rounded border-gray-300 text-[#0066CC] focus:ring-[#0066CC]"
+                      className="h-4 w-4 rounded border-gray-300 text-[#f97316] focus:ring-[#f97316]"
                     />
                     <span className="font-medium">{p.name}</span>
                   </label>
@@ -177,7 +177,7 @@ export function AttendanceClient({
             <Button
               onClick={handleSave}
               disabled={loading}
-              className="mt-6 bg-[#0066CC] hover:bg-blue-700"
+              className="mt-6 bg-[#f97316] hover:bg-orange-600"
             >
               {loading ? "Saving..." : saved ? "Saved!" : "Save Attendance"}
             </Button>

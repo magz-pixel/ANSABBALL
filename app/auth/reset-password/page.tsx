@@ -66,7 +66,7 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-6 rounded-lg border border-[#0066CC]/20 bg-white p-8 shadow-lg">
+      <div className="w-full max-w-md space-y-6 rounded-lg border border-[#f97316]/20 bg-white p-8 shadow-lg">
         <h1 className="text-center text-2xl font-bold text-[#001F3F]">
           Set new password
         </h1>
@@ -106,13 +106,13 @@ export default function ResetPasswordPage() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#0066CC] text-white hover:bg-blue-700"
+            className="w-full bg-[#f97316] text-white hover:bg-orange-600"
           >
             {loading ? "Saving…" : "Save password"}
           </Button>
         </form>
         <p className="text-center text-sm">
-          <Link href="/auth/login" className="text-[#0066CC] hover:underline">
+          <Link href="/auth/login" className="text-[#f97316] hover:underline">
             Sign in
           </Link>
         </p>

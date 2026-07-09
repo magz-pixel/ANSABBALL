@@ -118,7 +118,7 @@ export function PlayerEvaluationForm({ playerId }: { playerId: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <Card className="border-[#0066CC]/30 bg-[#0066CC]/5">
+      <Card className="border-[#f97316]/30 bg-[#f97316]/5">
         <CardHeader>
           <CardTitle className="text-lg">Player performance evaluation</CardTitle>
           <p className="text-sm text-black/70">
@@ -199,7 +199,7 @@ export function PlayerEvaluationForm({ playerId }: { playerId: string }) {
         </CardHeader>
         <CardContent>
           <textarea
-            className="min-h-[88px] w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0066CC] focus:outline-none focus:ring-2 focus:ring-[#0066CC]/20"
+            className="min-h-[88px] w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#f97316] focus:outline-none focus:ring-2 focus:ring-[#f97316]/20"
             value={experienceSummary}
             onChange={(e) => setExperienceSummary(e.target.value)}
             placeholder="High-level summary of your experience coaching this player…"
@@ -221,7 +221,7 @@ export function PlayerEvaluationForm({ playerId }: { playerId: string }) {
                 <span className="text-sm text-black/85">
                   {m.label}
                   {m.primary ? (
-                    <span className="ml-1 text-xs text-[#0066CC]">*</span>
+                    <span className="ml-1 text-xs text-[#f97316]">*</span>
                   ) : null}
                 </span>
                 <div className="flex flex-wrap gap-1">
@@ -232,7 +232,7 @@ export function PlayerEvaluationForm({ playerId }: { playerId: string }) {
                       onClick={() => setMetric(m.id, n)}
                       className={`min-h-[44px] min-w-[44px] rounded-md text-sm font-medium transition-colors touch-manipulation sm:min-h-[40px] sm:min-w-[40px] ${
                           scores[m.id] === n
-                            ? "bg-[#0066CC] text-white"
+                            ? "bg-[#f97316] text-white"
                             : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                         }`}
                     >
@@ -258,7 +258,7 @@ export function PlayerEvaluationForm({ playerId }: { playerId: string }) {
               onClick={() => strengthToggle(o.id)}
               className={`rounded-full border px-3 py-1.5 text-sm ${
                 overallStrengths.includes(o.id)
-                  ? "border-[#0066CC] bg-[#0066CC] text-white"
+                  ? "border-[#f97316] bg-[#f97316] text-white"
                   : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
               }`}
             >
@@ -274,7 +274,7 @@ export function PlayerEvaluationForm({ playerId }: { playerId: string }) {
         </CardHeader>
         <CardContent>
           <textarea
-            className="min-h-[120px] w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0066CC] focus:outline-none focus:ring-2 focus:ring-[#0066CC]/20"
+            className="min-h-[120px] w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#f97316] focus:outline-none focus:ring-2 focus:ring-[#f97316]/20"
             value={comments}
             onChange={(e) => setComments(e.target.value)}
             placeholder="Training focus, game situations, positions to work on…"
@@ -291,7 +291,7 @@ export function PlayerEvaluationForm({ playerId }: { playerId: string }) {
       <Button
         type="submit"
         disabled={loading}
-        className="w-full bg-[#0066CC] py-6 text-base font-semibold text-white hover:bg-blue-700 sm:w-auto"
+        className="w-full bg-[#f97316] py-6 text-base font-semibold text-white hover:bg-orange-600 sm:w-auto"
       >
         {loading ? "Saving evaluation…" : "Submit evaluation"}
       </Button>

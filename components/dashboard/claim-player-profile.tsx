@@ -112,7 +112,7 @@ export function ClaimPlayerProfile({
               required
             />
           </div>
-          <Button type="submit" disabled={loading} className="bg-[#0066CC] hover:bg-blue-700">
+          <Button type="submit" disabled={loading} className="bg-[#f97316] hover:bg-orange-600">
             {loading ? "Searching..." : "Find my profile"}
           </Button>
         </form>
@@ -145,7 +145,7 @@ export function ClaimPlayerProfile({
                     type="button"
                     onClick={() => handleClaim(r.id)}
                     disabled={claimingId === r.id}
-                    className="bg-[#0066CC] hover:bg-blue-700"
+                    className="bg-[#f97316] hover:bg-orange-600"
                   >
                     {claimingId === r.id ? "Linking..." : "Link this profile"}
                   </Button>

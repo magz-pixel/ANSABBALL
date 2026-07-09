@@ -72,7 +72,7 @@ export function JournalClient({
             <div>
               <Label>What did you practice?</Label>
               <textarea
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0066CC] focus:outline-none focus:ring-2 focus:ring-[#0066CC]/20"
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#f97316] focus:outline-none focus:ring-2 focus:ring-[#f97316]/20"
                 rows={4}
                 value={entry}
                 onChange={(e) => setEntry(e.target.value)}
@@ -80,7 +80,7 @@ export function JournalClient({
                 required
               />
             </div>
-            <Button type="submit" disabled={loading} className="bg-[#0066CC] hover:bg-blue-700">
+            <Button type="submit" disabled={loading} className="bg-[#f97316] hover:bg-orange-600">
               {loading ? "Saving..." : "Save Entry"}
             </Button>
           </form>

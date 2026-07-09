@@ -70,7 +70,7 @@ export function CheckoutClient() {
       <div className="mx-auto max-w-lg px-4 py-20 text-center">
         <p className="text-lg text-gray-600">Your cart is empty.</p>
         <Link href="/merchandise">
-          <Button className="mt-6 bg-[#0066CC] text-white hover:bg-blue-700">
+          <Button className="mt-6 bg-[#f97316] text-white hover:bg-orange-600">
             Go to shop
           </Button>
         </Link>
@@ -111,7 +111,7 @@ export function CheckoutClient() {
           Save this order number for your records.
         </p>
         <Link href="/merchandise">
-          <Button className="mt-8 bg-[#0066CC] text-white hover:bg-blue-700">
+          <Button className="mt-8 bg-[#f97316] text-white hover:bg-orange-600">
             Continue shopping
           </Button>
         </Link>
@@ -127,7 +127,7 @@ export function CheckoutClient() {
       </p>
 
       {/* Order number */}
-      <section className="mt-8 rounded-xl border-2 border-dashed border-[#0066CC]/40 bg-[#0066CC]/5 p-6">
+      <section className="mt-8 rounded-xl border-2 border-dashed border-[#f97316]/40 bg-[#f97316]/5 p-6">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-[#001F3F]">
           Your order number
         </h2>
@@ -162,7 +162,7 @@ export function CheckoutClient() {
           </li>
           <li>
             Enter amount:{" "}
-            <strong className="text-[#0066CC]">{formatKes(subtotalKes)}</strong>{" "}
+            <strong className="text-[#f97316]">{formatKes(subtotalKes)}</strong>{" "}
             (must match your cart total exactly).
           </li>
           <li>
@@ -184,7 +184,7 @@ export function CheckoutClient() {
           <strong>Need help?</strong> Call{" "}
           <a
             href={`tel:${MPESA_CONFIG.supportPhone.replace(/\s/g, "")}`}
-            className="text-[#0066CC] underline"
+            className="text-[#f97316] underline"
           >
             {MPESA_CONFIG.supportPhone}
           </a>
@@ -304,7 +304,7 @@ export function CheckoutClient() {
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button
             type="submit"
-            className="flex-1 bg-[#0066CC] py-6 text-base font-semibold text-white hover:bg-blue-700"
+            className="flex-1 bg-[#f97316] py-6 text-base font-semibold text-white hover:bg-orange-600"
           >
             Submit order
           </Button>

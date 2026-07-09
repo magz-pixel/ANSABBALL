@@ -35,7 +35,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-6 rounded-lg border border-[#0066CC]/20 bg-white p-8 shadow-lg">
+      <div className="w-full max-w-md space-y-6 rounded-lg border border-[#f97316]/20 bg-white p-8 shadow-lg">
         <div>
           <h1 className="text-center text-2xl font-bold text-[#001F3F]">
             Reset password
@@ -70,7 +70,7 @@ export default function ForgotPasswordPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-[#0066CC] focus:outline-none focus:ring-1 focus:ring-[#0066CC]"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-[#f97316] focus:outline-none focus:ring-1 focus:ring-[#f97316]"
               />
             </div>
             <button
@@ -84,7 +84,7 @@ export default function ForgotPasswordPage() {
         )}
 
         <p className="text-center text-sm text-gray-600">
-          <Link href="/auth/login" className="font-medium text-[#0066CC] hover:underline">
+          <Link href="/auth/login" className="font-medium text-[#f97316] hover:underline">
             ← Back to sign in
           </Link>
         </p>

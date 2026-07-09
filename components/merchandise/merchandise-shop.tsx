@@ -40,7 +40,7 @@ export function MerchandiseShop() {
           onClick={() => setCategory("all")}
           className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
             category === "all"
-              ? "bg-[#0066CC] text-white shadow-md"
+              ? "bg-[#f97316] text-white shadow-md"
               : "bg-gray-100 text-[#001F3F] hover:bg-gray-200"
           }`}
         >
@@ -53,7 +53,7 @@ export function MerchandiseShop() {
             onClick={() => setCategory(c.id)}
             className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
               category === c.id
-                ? "bg-[#0066CC] text-white shadow-md"
+                ? "bg-[#f97316] text-white shadow-md"
                 : "bg-gray-100 text-[#001F3F] hover:bg-gray-200"
             }`}
           >
@@ -93,7 +93,7 @@ export function MerchandiseShop() {
                   {product.variantNote}
                 </p>
               ) : null}
-              <p className="mt-4 text-xl font-bold text-[#0066CC]">
+              <p className="mt-4 text-xl font-bold text-[#f97316]">
                 {formatProductPrice(product)}
               </p>
               <ProductAddControls product={product} onAdd={addItem} />
@@ -136,7 +136,7 @@ function ProductAddControls({
         </Link>
         <p className="text-center text-xs text-gray-500">
           Or call{" "}
-          <a href="tel:+254718082452" className="text-[#0066CC] underline">
+          <a href="tel:+254718082452" className="text-[#f97316] underline">
             +254 718 082 452
           </a>
         </p>
@@ -164,7 +164,7 @@ function ProductAddControls({
       ) : null}
       <Button
         type="button"
-        className="w-full bg-[#0066CC] font-semibold text-white hover:bg-blue-700"
+        className="w-full bg-[#f97316] font-semibold text-white hover:bg-orange-600"
         onClick={() => onAdd(product.id, 1, hasSizes ? size : undefined)}
       >
         Add to cart

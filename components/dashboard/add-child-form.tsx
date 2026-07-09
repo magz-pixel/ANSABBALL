@@ -19,7 +19,14 @@ type Expertise =
   | "advanced"
   | "elite";
 
-export function AddChildForm() {
+export function AddChildForm({
+  onComplete,
+  stayOnPage = false,
+}: {
+  onComplete?: () => void;
+  /** When true, do not navigate to /dashboard/children after save (pending parent flow). */
+  stayOnPage?: boolean;
+}) {
   const router = useRouter();
   const supabase = createClient();
 
@@ -126,6 +133,20 @@ export function AddChildForm() {
       return;
     }
 
+    if (stayOnPage) {
+      setForm({
+        name: "",
+        age: "",
+        gender: "",
+        school: "",
+        expertise_level: "beginner",
+      });
+      setPhotoFile(null);
+      onComplete?.();
+      router.refresh();
+      return;
+    }
+
     router.push("/dashboard/children");
     router.refresh();
   }
@@ -227,10 +248,10 @@ export function AddChildForm() {
           </div>
 
           <div className="flex gap-2 pt-2">
-            <Button type="submit" disabled={loading} className="bg-[#0066CC] hover:bg-blue-700">
+            <Button type="submit" disabled={loading} className="bg-[#f97316] hover:bg-orange-600">
               {loading ? "Saving..." : "Save child"}
             </Button>
-            <Button type="button" variant="outline" onClick={() => router.push("/dashboard/children")}>
+            <Button type="button" variant="outline" onClick={() => (stayOnPage ? onComplete?.() : router.push("/dashboard/children"))}>
               Cancel
             </Button>
           </div>

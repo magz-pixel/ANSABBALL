@@ -24,7 +24,7 @@ export function ProgressLineChart({ data }: { data: ChartData[] }) {
           <XAxis dataKey="date" />
           <YAxis domain={[0, 10]} />
           <Tooltip />
-          <Line type="monotone" dataKey="dribbling" stroke="#0066CC" strokeWidth={2} />
+          <Line type="monotone" dataKey="dribbling" stroke="#f97316" strokeWidth={2} />
           <Line type="monotone" dataKey="shooting" stroke="#001F3F" strokeWidth={2} />
           <Line type="monotone" dataKey="defense" stroke="#22c55e" strokeWidth={2} />
         </LineChart>

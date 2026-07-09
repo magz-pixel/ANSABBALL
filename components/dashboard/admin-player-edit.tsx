@@ -202,7 +202,7 @@ export function AdminPlayerEdit({
             <Button
               type="submit"
               disabled={saving}
-              className="bg-[#0066CC] hover:bg-blue-700"
+              className="bg-[#f97316] hover:bg-orange-600"
             >
               {saving ? "Saving..." : "Save changes"}
             </Button>

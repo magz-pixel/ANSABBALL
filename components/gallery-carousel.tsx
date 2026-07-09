@@ -38,9 +38,10 @@ export function GalleryCarousel() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-[#001F3F] py-16">
+    <section className="relative overflow-hidden bg-ansa-primary py-16">
       <div className="mx-auto max-w-6xl px-4">
-        <h2 className="mb-10 text-center text-3xl font-bold text-white">
+        <p className="text-center text-xs font-bold uppercase tracking-[0.2em] text-ansa-accent">Gallery</p>
+        <h2 className="font-display mb-10 text-center text-3xl font-extrabold italic text-white">
           Our Moments
         </h2>
         <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl shadow-2xl md:aspect-[21/9]">
@@ -75,7 +76,7 @@ export function GalleryCarousel() {
               className={cn(
                 "h-2 rounded-full transition-all duration-300",
                 i === index
-                  ? "w-8 bg-[#0066CC]"
+                  ? "w-8 bg-[#f97316]"
                   : "w-2 bg-white/40 hover:bg-white/60"
               )}
               onClick={() => setIndex(i)}

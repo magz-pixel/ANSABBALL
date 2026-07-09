@@ -226,21 +226,21 @@ export default async function CoachesPage() {
                   )}
                   {evs.map((row, i) => (
                     <li key={`e-${c.id}-${i}`}>
-                      <span className="font-medium text-[#0066CC]">Evaluation</span> —{" "}
+                      <span className="font-medium text-[#f97316]">Evaluation</span> —{" "}
                       {playerName(row as { players?: unknown })} on{" "}
                       {String((row as { evaluated_at?: string }).evaluated_at ?? "—")}
                     </li>
                   ))}
                   {prs.map((row, i) => (
                     <li key={`p-${c.id}-${i}`}>
-                      <span className="font-medium text-[#0066CC]">Progress</span> —{" "}
+                      <span className="font-medium text-[#f97316]">Progress</span> —{" "}
                       {(row as { skill?: string }).skill} for {playerName(row as { players?: unknown })} (
                       {String((row as { date?: string }).date ?? "—")})
                     </li>
                   ))}
                   {ats.map((row, i) => (
                     <li key={`a-${c.id}-${i}`}>
-                      <span className="font-medium text-[#0066CC]">Attendance</span> —{" "}
+                      <span className="font-medium text-[#f97316]">Attendance</span> —{" "}
                       {playerName(row as { players?: unknown })} on{" "}
                       {String((row as { session_date?: string }).session_date ?? "—")}
                     </li>

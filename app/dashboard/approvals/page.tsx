@@ -50,16 +50,45 @@ export default async function ApprovalsPage() {
     };
   });
 
+  const parentIds = (pendingUsers ?? []).filter((u) => u.role === "parent").map((u) => u.id);
+  const { data: pendingChildren } = parentIds.length
+    ? await client
+        .from("players")
+        .select("id, name, age, school, parent_id, status")
+        .in("parent_id", parentIds)
+        .eq("status", "pending")
+    : { data: [] };
+
+  const childrenByParent: Record<
+    string,
+    { id: string; name: string; age: number | null; school: string | null }[]
+  > = {};
+  (pendingChildren ?? []).forEach((child) => {
+    if (!child.parent_id) return;
+    if (!childrenByParent[child.parent_id]) childrenByParent[child.parent_id] = [];
+    childrenByParent[child.parent_id].push({
+      id: child.id,
+      name: child.name,
+      age: child.age,
+      school: child.school,
+    });
+  });
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-[#001F3F]">Pending Approvals</h1>
         <p className="mt-1 text-black/70">
-          Approve accounts so parents and players can access the full dashboard.
+          Approve accounts so parents and players can access the full dashboard. Parent approvals also
+          activate any children they registered while waiting.
         </p>
       </div>
 
-      <ApprovalsClient initialUsers={pendingUsers ?? []} profileMap={profileMap} />
+      <ApprovalsClient
+        initialUsers={pendingUsers ?? []}
+        profileMap={profileMap}
+        childrenByParent={childrenByParent}
+      />
     </div>
   );
 }

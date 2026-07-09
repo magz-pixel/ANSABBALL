@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { AnsaLogo } from "@/components/brand/ansa-logo";
 import {
   DASHBOARD_NAV_LINKS,
   type DashboardRole,
@@ -20,9 +21,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
     <aside className="hidden w-64 shrink-0 flex-col border-r border-gray-200 bg-[#001F3F] lg:flex lg:w-72">
       <div className="flex h-16 items-center justify-between border-b border-white/10 px-6">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <span className="rounded bg-[#0066CC] px-2 py-0.5 text-sm font-bold text-white">
-            ANSA
-          </span>
+          <AnsaLogo href="" variant="light" imageClassName="h-8" />
           <span className="hidden text-sm font-medium text-white/90 sm:inline">
             Dashboard
           </span>
@@ -43,7 +42,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
               className={cn(
                 "block min-h-[44px] rounded-lg px-4 py-3 text-sm font-medium transition-colors touch-manipulation",
                 isActive
-                  ? "bg-[#0066CC] text-white"
+                  ? "bg-[#f97316] text-white"
                   : "text-white/80 hover:bg-white/10 hover:text-white"
               )}
             >

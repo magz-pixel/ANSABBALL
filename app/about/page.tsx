@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { PageBanner } from "@/components/marketing/page-banner";
 import { siteName } from "@/lib/seo-config";
 
 export const metadata: Metadata = {
@@ -65,15 +66,10 @@ const PHILOSOPHY_POINTS = [
 export default function AboutPage() {
   return (
     <div>
-      {/* Hero banner */}
-      <section className="flex min-h-[50vh] flex-col items-center justify-center bg-[#001F3F] px-4 text-center">
-        <h1 className="text-4xl font-bold text-white md:text-5xl lg:text-6xl">
-          About ANSA Basketball Academy
-        </h1>
-        <p className="mt-6 max-w-2xl text-xl text-white/90 md:text-2xl">
-          More Than Basketball – Building Life Champions in Nairobi
-        </p>
-      </section>
+      <PageBanner
+        title="About ANSA Basketball Academy"
+        subtitle="More Than Basketball – Building Life Champions in Nairobi"
+      />
 
       {/* Founder */}
       <section className="bg-white py-20">
@@ -148,7 +144,7 @@ export default function AboutPage() {
 
           {/* What Sets ANSA Apart */}
           <div className="mt-16">
-            <h2 className="mb-8 inline-block border-b-4 border-[#0066CC] pb-2 text-2xl font-bold text-[#001F3F]">
+            <h2 className="mb-8 inline-block border-b-4 border-[#f97316] pb-2 text-2xl font-bold text-[#001F3F]">
               What Sets ANSA Apart
             </h2>
             <div className="mt-6 space-y-6 text-lg leading-relaxed text-black/85">
@@ -197,9 +193,9 @@ export default function AboutPage() {
             {PHILOSOPHY_POINTS.map((point) => (
               <div
                 key={point.title}
-                className="group rounded-xl border border-gray-100 bg-white p-6 shadow-lg shadow-gray-200/50 transition-all duration-300 hover:-translate-y-1 hover:border-[#0066CC]/20 hover:shadow-xl"
+                className="group rounded-xl border border-gray-100 bg-white p-6 shadow-lg shadow-gray-200/50 transition-all duration-300 hover:-translate-y-1 hover:border-[#f97316]/20 hover:shadow-xl"
               >
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-[#0066CC]/10 text-[#0066CC] transition-colors group-hover:bg-[#0066CC] group-hover:text-white">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-[#f97316]/10 text-[#f97316] transition-colors group-hover:bg-[#f97316] group-hover:text-white">
                   {point.icon}
                 </div>
                 <h3 className="font-semibold text-[#001F3F]">{point.title}</h3>
@@ -219,7 +215,7 @@ export default function AboutPage() {
             href="/auth/register"
             className={cn(
               buttonVariants({ size: "lg" }),
-              "bg-[#0066CC] px-10 font-semibold text-white shadow-lg transition-all hover:scale-105 hover:bg-blue-700 hover:shadow-xl"
+              "bg-[#f97316] px-10 font-semibold text-white shadow-lg transition-all hover:scale-105 hover:bg-blue-700 hover:shadow-xl"
             )}
           >
             Join Our Family

@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { uploadPlayerPhoto } from "@/lib/player-photo-upload";
 
 interface Group {
   id: string;
@@ -29,6 +31,17 @@ export function AddPlayerModal({
   const router = useRouter();
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const photoPreview = useMemo(() => {
+    if (!photoFile) return null;
+    return URL.createObjectURL(photoFile);
+  }, [photoFile]);
+
+  useEffect(() => {
+    if (!photoPreview) return;
+    return () => URL.revokeObjectURL(photoPreview);
+  }, [photoPreview]);
+
   const [form, setForm] = useState({
     name: "",
     age: "",
@@ -47,6 +60,15 @@ export function AddPlayerModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+
+    let photo_url: string | null = null;
+    if (photoFile) {
+      photo_url = await uploadPlayerPhoto(supabase, photoFile, "player");
+      if (!photo_url) {
+        setLoading(false);
+        return;
+      }
+    }
 
     let parentId = null;
     if (form.parent_email) {
@@ -68,6 +90,7 @@ export function AddPlayerModal({
       group_id: form.group_id || null,
       status: "pending",
       payment_status: "pending",
+      photo_url,
     });
 
     setLoading(false);
@@ -84,6 +107,7 @@ export function AddPlayerModal({
       parent_email: "",
       group_id: "",
     });
+    setPhotoFile(null);
     onClose();
     router.refresh();
   }
@@ -104,6 +128,28 @@ export function AddPlayerModal({
           </p>
         )}
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <div>
+            <Label htmlFor="player-photo">Player photo (optional)</Label>
+            <Input
+              id="player-photo"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              capture="environment"
+              onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)}
+            />
+            {photoPreview ? (
+              <div className="relative mt-3 h-24 w-24 overflow-hidden rounded-lg border bg-white">
+                <Image
+                  src={photoPreview}
+                  alt="Player photo preview"
+                  fill
+                  className="object-cover"
+                  sizes="96px"
+                  unoptimized
+                />
+              </div>
+            ) : null}
+          </div>
           <div>
             <Label htmlFor="name">Name *</Label>
             <Input
@@ -194,7 +240,7 @@ export function AddPlayerModal({
             <Button
               type="submit"
               disabled={loading || (requireGroup && groups.length === 0)}
-              className="bg-[#0066CC] hover:bg-blue-700"
+              className="bg-[#f97316] hover:bg-orange-600"
             >
               {loading ? "Adding..." : "Add Player"}
             </Button>

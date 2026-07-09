@@ -181,7 +181,7 @@ export function ConsentForm({
         <Button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#0066CC] hover:bg-blue-700 sm:w-auto"
+          className="w-full bg-[#f97316] hover:bg-orange-600 sm:w-auto"
         >
           {loading ? "Saving…" : "Submit consent"}
         </Button>

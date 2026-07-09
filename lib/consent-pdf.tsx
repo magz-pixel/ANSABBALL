@@ -16,7 +16,7 @@ import {
 const styles = StyleSheet.create({
   page: { padding: 40, fontSize: 9, fontFamily: "Helvetica", color: "#111" },
   brand: { fontSize: 14, fontWeight: "bold", color: "#001F3F", marginBottom: 4 },
-  subtitle: { fontSize: 10, color: "#0066CC", marginBottom: 12 },
+  subtitle: { fontSize: 10, color: "#f97316", marginBottom: 12 },
   meta: { fontSize: 8, color: "#444", marginBottom: 10, lineHeight: 1.4 },
   intro: { fontSize: 9, marginBottom: 10, lineHeight: 1.4 },
   sectionTitle: {

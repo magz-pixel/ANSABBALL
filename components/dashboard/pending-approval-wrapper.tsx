@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { DashboardPendingApproval } from "../dashboard-pending-approval";
 import { PlayerProfileForm } from "./player-profile-form";
 import { ConsentForm } from "./consent-form";
+import { AddChildForm } from "./add-child-form";
 
 interface PendingApprovalWrapperProps {
   userId: string;
@@ -65,6 +66,9 @@ export function PendingApprovalWrapper({
           compact
           onComplete={() => router.refresh()}
         />
+      )}
+      {role === "parent" && (
+        <AddChildForm stayOnPage onComplete={() => router.refresh()} />
       )}
       <DashboardPendingApproval email={email} fullName={fullName} />
     </div>

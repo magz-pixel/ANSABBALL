@@ -81,14 +81,14 @@ export async function AdminDashboard({ userName = "ANSA Admin" }: { userName?: s
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-0 shadow-lg shadow-[#0066CC]/10 bg-white">
+        <Card className="border-0 shadow-lg shadow-[#f97316]/10 bg-white">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-black/70">
               {role === "coach" ? "Players (your groups)" : "Active Players"}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-[#0066CC]">{activePlayers}</p>
+            <p className="text-3xl font-bold text-[#f97316]">{activePlayers}</p>
           </CardContent>
         </Card>
         {isAdmin && (
@@ -101,7 +101,7 @@ export async function AdminDashboard({ userName = "ANSA Admin" }: { userName?: s
               {pending > 0 && (
                 <Link
                   href="/dashboard/approvals"
-                  className="mt-2 inline-block text-sm font-medium text-[#0066CC] hover:underline"
+                  className="mt-2 inline-block text-sm font-medium text-[#f97316] hover:underline"
                 >
                   Review →
                 </Link>
@@ -110,14 +110,14 @@ export async function AdminDashboard({ userName = "ANSA Admin" }: { userName?: s
           </Card>
         )}
         {role === "coach" && (
-          <Card className="border-0 border-dashed border-[#0066CC]/30 bg-white">
+          <Card className="border-0 border-dashed border-[#f97316]/30 bg-white">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-black/70">Your groups</CardTitle>
             </CardHeader>
             <CardContent>
               <Link
                 href="/dashboard/groups"
-                className="text-sm font-medium text-[#0066CC] hover:underline"
+                className="text-sm font-medium text-[#f97316] hover:underline"
               >
                 View assignment →
               </Link>
@@ -132,7 +132,7 @@ export async function AdminDashboard({ userName = "ANSA Admin" }: { userName?: s
             <div className="flex flex-wrap gap-2">
               <Link
                 href="/dashboard/players?add=1"
-                className="rounded-lg bg-[#0066CC] px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+                className="rounded-lg bg-[#f97316] px-3 py-1.5 text-sm font-medium text-white hover:bg-orange-600"
               >
                 Add Player
               </Link>
@@ -152,7 +152,7 @@ export async function AdminDashboard({ userName = "ANSA Admin" }: { userName?: s
           <CardContent>
             <Link
               href="/dashboard/announcements"
-              className="text-sm font-medium text-[#0066CC] hover:underline"
+              className="text-sm font-medium text-[#f97316] hover:underline"
             >
               View all →
             </Link>
@@ -193,7 +193,7 @@ export async function AdminDashboard({ userName = "ANSA Admin" }: { userName?: s
             )}
             <Link
               href="/dashboard/progress"
-              className="mt-4 inline-block text-sm font-medium text-[#0066CC] hover:underline"
+              className="mt-4 inline-block text-sm font-medium text-[#f97316] hover:underline"
             >
               View all progress →
             </Link>

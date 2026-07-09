@@ -22,7 +22,7 @@ export function AddPlayerButton({
   return (
     <>
       <Button
-        className="bg-[#0066CC] hover:bg-blue-700"
+        className="bg-[#f97316] hover:bg-orange-600"
         onClick={() => setOpen(true)}
       >
         Add Player

@@ -69,7 +69,7 @@ export function DownloadPlayerReportButton({
         className={
           variant === "outline"
             ? "border-[#001F3F] text-[#001F3F] hover:bg-[#001F3F]/5"
-            : "bg-[#0066CC] text-white hover:bg-blue-700"
+            : "bg-[#f97316] text-white hover:bg-orange-600"
         }
         onClick={handleDownload}
         disabled={loading}

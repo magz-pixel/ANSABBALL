@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -14,6 +14,13 @@ import {
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
+  subsets: ["latin"],
+  weight: ["600", "700", "800", "900"],
   display: "swap",
 });
 
@@ -50,9 +57,9 @@ export const metadata: Metadata = {
     description: defaultDescription,
     images: [
       {
-        url: "/hero.png",
-        width: 1024,
-        height: 545,
+        url: "/hero-ansa.png",
+        width: 2560,
+        height: 1440,
         alt: "ANSA Basketball Academy — youth basketball training in Nairobi, Kenya",
       },
     ],
@@ -80,7 +87,7 @@ export default function RootLayout({
   return (
     <html lang="en-KE" className="overflow-x-hidden">
       <body
-        className={`${inter.variable} min-w-0 font-sans antialiased overflow-x-hidden text-ansa-primary`}
+        className={`${inter.variable} ${montserrat.variable} min-w-0 font-sans antialiased overflow-x-hidden text-ansa-primary`}
       >
         <OrganizationJsonLd />
         <Navbar />

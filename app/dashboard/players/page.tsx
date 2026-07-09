@@ -110,7 +110,7 @@ export default async function PlayersPage() {
                   <td className="px-6 py-4">
                     <Link
                       href={`/dashboard/players/${p.id}`}
-                      className="font-medium text-[#0066CC] hover:underline"
+                      className="font-medium text-[#f97316] hover:underline"
                     >
                       {p.name}
                     </Link>
@@ -143,7 +143,7 @@ export default async function PlayersPage() {
                       <div className="flex items-center justify-end gap-3">
                         <Link
                           href={`/dashboard/players/${p.id}`}
-                          className="text-sm font-medium text-[#0066CC] hover:underline"
+                          className="text-sm font-medium text-[#f97316] hover:underline"
                         >
                           View
                         </Link>

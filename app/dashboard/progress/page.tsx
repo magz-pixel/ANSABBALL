@@ -42,7 +42,7 @@ export default async function ProgressPage() {
             <Card className="transition-shadow hover:shadow-xl">
               <CardHeader>
                 <CardTitle>{p.name}</CardTitle>
-                <CardDescription className="text-[#0066CC]">
+                <CardDescription className="text-[#f97316]">
                   {(p.player_groups as { name?: string } | null)?.name ?? "—"}
                 </CardDescription>
               </CardHeader>

@@ -4,6 +4,9 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { formatAuthError } from "@/lib/auth-errors";
+import { isSupabaseConfigured } from "@/lib/supabase/public-config";
+import { AnsaLogo } from "@/components/brand/ansa-logo";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -12,40 +15,60 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const router = useRouter();
-  const supabase = createClient();
+  const supabaseConfigured = isSupabaseConfigured();
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!supabaseConfigured) {
+      setError("Sign-in is temporarily unavailable. Please contact ANSA support.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setMessage(null);
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-      return;
+      if (error) {
+        setError(formatAuthError(error));
+        setLoading(false);
+        return;
+      }
+
+      await supabase.rpc("sync_public_user_role_from_auth");
+
+      router.push("/dashboard");
+      router.refresh();
+    } catch (err) {
+      setError(formatAuthError(err));
     }
-
-    await supabase.rpc("sync_public_user_role_from_auth");
-
-    router.push("/dashboard");
-    router.refresh();
     setLoading(false);
   };
 
   const handleGoogleLogin = async () => {
+    if (!supabaseConfigured) {
+      setError("Sign-in is temporarily unavailable. Please contact ANSA support.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/auth/callback` },
+      });
 
-    if (error) {
-      setError(error.message);
+      if (error) {
+        setError(formatAuthError(error));
+      }
+    } catch (err) {
+      setError(formatAuthError(err));
     }
     setLoading(false);
   };
@@ -53,14 +76,21 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
       <div className="w-full max-w-md space-y-8 rounded-lg border border-ansa-accent/20 bg-white p-8 shadow-lg">
-        <div>
-          <h2 className="text-center text-2xl font-bold text-ansa-primary">
+        <div className="flex flex-col items-center">
+          <AnsaLogo href="/" />
+          <h2 className="mt-4 text-center text-2xl font-bold text-ansa-primary">
             Sign in to ANSA
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Access your dashboard and programs
           </p>
         </div>
+
+        {!supabaseConfigured && (
+          <div className="rounded-md bg-amber-50 p-3 text-sm text-amber-900">
+            Sign-in is not configured on this deployment. Please contact the site administrator.
+          </div>
+        )}
 
         <form onSubmit={handleEmailLogin} className="space-y-6">
           {error && (
@@ -118,7 +148,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !supabaseConfigured}
             className="w-full rounded-md bg-ansa-primary px-4 py-2 font-medium text-white transition-colors hover:bg-ansa-primary/90 disabled:opacity-50"
           >
             {loading ? "Signing in..." : "Sign in"}
@@ -137,7 +167,7 @@ export default function LoginPage() {
         <button
           type="button"
           onClick={handleGoogleLogin}
-          disabled={loading}
+          disabled={loading || !supabaseConfigured}
           className="flex w-full items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 font-medium text-ansa-primary transition-colors hover:bg-gray-50 disabled:opacity-50"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24">

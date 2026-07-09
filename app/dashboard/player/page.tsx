@@ -35,7 +35,7 @@ export default async function PlayerProfilePage() {
             </p>
             <Link
               href="/dashboard/player/claim"
-              className="mt-5 inline-flex items-center justify-center rounded-lg bg-[#0066CC] px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+              className="mt-5 inline-flex items-center justify-center rounded-lg bg-[#f97316] px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600"
             >
               Link my profile
             </Link>
@@ -75,7 +75,7 @@ export default async function PlayerProfilePage() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-8">
-        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-gray-200 ring-4 ring-[#0066CC]/10">
+        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-gray-200 ring-4 ring-[#f97316]/10">
           <Image
             src={getPlayerPhotoUrl(player.photo_url, player.id)}
             alt={player.name}

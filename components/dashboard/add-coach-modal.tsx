@@ -76,7 +76,7 @@ export function AddCoachModal({ open, onClose }: AddCoachModalProps) {
             />
           </div>
           <div className="flex gap-2 pt-4">
-            <Button type="submit" disabled={loading} className="bg-[#0066CC] hover:bg-blue-700">
+            <Button type="submit" disabled={loading} className="bg-[#f97316] hover:bg-orange-600">
               {loading ? "Adding..." : "Add Coach"}
             </Button>
             <Button type="button" variant="outline" onClick={onClose}>

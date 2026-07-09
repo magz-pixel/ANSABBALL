@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getRoleAwareServerClient } from "@/lib/supabase/role-data-client";
 import { getCoachAssignedGroupIds } from "@/lib/coach-scope";
 import { AttendanceClient } from "@/components/dashboard/attendance-client";
+import { AttendanceRegister } from "@/components/dashboard/attendance-register";
 
 export default async function AttendancePage() {
   const supabase = await createClient();
@@ -55,6 +56,8 @@ export default async function AttendancePage() {
             : undefined
         }
       />
+
+      {role === "admin" && <AttendanceRegister groups={groups} />}
     </div>
   );
 }

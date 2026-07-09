@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { ScholarshipForm } from "@/components/scholarship-form";
 import { cn } from "@/lib/utils";
+import { PageBanner } from "@/components/marketing/page-banner";
 import { siteName } from "@/lib/seo-config";
 
 export const metadata: Metadata = {
@@ -44,20 +45,7 @@ const SUCCESS_STORIES = [
 export default function ScholarshipsPage() {
   return (
     <div>
-      {/* Banner */}
-      <section className="relative flex min-h-[45vh] items-center justify-center overflow-hidden bg-[#001F3F] px-4">
-        <Image
-          src="/gallery/gallery-2.png"
-          alt="ANSA scholarship recipients"
-          fill
-          className="object-cover opacity-30"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-[#001F3F]/80" />
-        <h1 className="relative z-10 text-4xl font-bold text-white md:text-5xl">
-          Scholarship Program
-        </h1>
-      </section>
+      <PageBanner title="Scholarship Program" subtitle="Financial support for talented youth who show heart and dedication" />
 
       {/* Intro */}
       <section className="bg-white py-16">
@@ -79,7 +67,7 @@ export default function ScholarshipsPage() {
                 key={item}
                 className="flex items-center gap-3 text-black/85"
               >
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#0066CC] text-sm font-bold text-white">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#f97316] text-sm font-bold text-white">
                   ✓
                 </span>
                 {item}
@@ -138,7 +126,7 @@ export default function ScholarshipsPage() {
             <a
               href="tel:0718082452"
               className={cn(
-                "font-semibold text-[#0066CC] transition-colors hover:text-blue-700 hover:underline"
+                "font-semibold text-[#f97316] transition-colors hover:text-blue-700 hover:underline"
               )}
             >
               0718082452

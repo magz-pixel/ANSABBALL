@@ -26,8 +26,8 @@ export function SkillRadarChart({ data }: { data: DataPoint[] }) {
           <Radar
             name="Skills"
             dataKey="value"
-            stroke="#0066CC"
-            fill="#0066CC"
+            stroke="#f97316"
+            fill="#f97316"
             fillOpacity={0.4}
           />
         </RadarChart>

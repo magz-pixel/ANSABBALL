@@ -52,7 +52,7 @@ export function ScholarshipForm() {
           name="name"
           type="text"
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-black focus:border-[#0066CC] focus:outline-none focus:ring-1 focus:ring-[#0066CC]"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-black focus:border-[#f97316] focus:outline-none focus:ring-1 focus:ring-[#f97316]"
           placeholder="Full name"
         />
       </div>
@@ -70,7 +70,7 @@ export function ScholarshipForm() {
           min={5}
           max={17}
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-black focus:border-[#0066CC] focus:outline-none focus:ring-1 focus:ring-[#0066CC]"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-black focus:border-[#f97316] focus:outline-none focus:ring-1 focus:ring-[#f97316]"
           placeholder="5–17"
         />
       </div>
@@ -86,7 +86,7 @@ export function ScholarshipForm() {
           name="parentContact"
           type="tel"
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-black focus:border-[#0066CC] focus:outline-none focus:ring-1 focus:ring-[#0066CC]"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-black focus:border-[#f97316] focus:outline-none focus:ring-1 focus:ring-[#f97316]"
           placeholder="Phone number"
         />
       </div>
@@ -102,7 +102,7 @@ export function ScholarshipForm() {
           name="storyOfNeed"
           rows={4}
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-black focus:border-[#0066CC] focus:outline-none focus:ring-1 focus:ring-[#0066CC]"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-black focus:border-[#f97316] focus:outline-none focus:ring-1 focus:ring-[#f97316]"
           placeholder="Tell us about your situation and why you need scholarship support..."
         />
       </div>
@@ -110,7 +110,7 @@ export function ScholarshipForm() {
         type="submit"
         disabled={loading}
         className={cn(
-          "w-full bg-[#0066CC] text-white hover:bg-blue-700",
+          "w-full bg-[#f97316] text-white hover:bg-orange-600",
           loading && "opacity-70"
         )}
       >

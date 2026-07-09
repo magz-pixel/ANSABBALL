@@ -29,14 +29,14 @@ export default async function ConsentPage() {
         <h1 className="text-xl font-bold text-[#001F3F]">Consent</h1>
         <p className="mt-2 text-black/70">
           Staff accounts don&apos;t sign the participant consent. Use{" "}
-          <Link href="/dashboard/players" className="font-medium text-[#0066CC] hover:underline">
+          <Link href="/dashboard/players" className="font-medium text-[#f97316] hover:underline">
             Players
           </Link>{" "}
           to view player records and download consent PDFs where available.
         </p>
         <Link
           href="/dashboard"
-          className="mt-6 inline-block text-sm font-medium text-[#0066CC] hover:underline"
+          className="mt-6 inline-block text-sm font-medium text-[#f97316] hover:underline"
         >
           ← Dashboard home
         </Link>

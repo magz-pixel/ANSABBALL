@@ -124,7 +124,7 @@ export function CoachProfileSetup({
   }
 
   return (
-    <Card className="border-[#0066CC]/20">
+    <Card className="border-[#f97316]/20">
       <CardHeader>
         <CardTitle>Complete your coach profile</CardTitle>
         <CardDescription>
@@ -136,7 +136,7 @@ export function CoachProfileSetup({
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="rounded-lg border border-[#0066CC]/20 bg-[#0066CC]/5 p-4">
+          <div className="rounded-lg border border-[#f97316]/20 bg-[#f97316]/5 p-4">
             <Label htmlFor="coach-photo" className="text-base font-semibold text-[#001F3F]">
               Photo *
             </Label>
@@ -148,7 +148,7 @@ export function CoachProfileSetup({
                 id="coach-photo"
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
-                className="block w-full max-w-sm cursor-pointer text-sm file:mr-4 file:rounded-md file:border-0 file:bg-[#0066CC] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-700"
+                className="block w-full max-w-sm cursor-pointer text-sm file:mr-4 file:rounded-md file:border-0 file:bg-[#f97316] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-orange-600"
                 onChange={(e) => {
                   const f = e.target.files?.[0] ?? null;
                   setPhotoFile(f);
@@ -198,7 +198,7 @@ export function CoachProfileSetup({
             />
           </div>
 
-          <Button type="submit" disabled={loading} className="bg-[#0066CC] hover:bg-blue-700">
+          <Button type="submit" disabled={loading} className="bg-[#f97316] hover:bg-orange-600">
             {loading ? "Saving..." : "Save coach profile"}
           </Button>
         </form>
